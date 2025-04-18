@@ -47,25 +47,25 @@ This library provides a simple mediator implementation that allows you to decoup
     }
     ```
 
-6.  Register the request handler with the `IServiceCollection`:
+6.  Resolve the `IMediator` from the `IServiceProvider` or through dependency injection:
 
     ```csharp
-    services.AddTransient<IRequestHandler<MyRequest, MyResponse>, MyRequestHandler>();
-    ```
-
-7.  Register the `IMediator` with the `IServiceCollection`:
-
-    ```csharp
-    services.AddScoped<IMediator, Mediator>();
-    ```
-
-8.  Resolve the `IMediator` from the `IServiceProvider`:
-
-    ```csharp
+    // From IServiceProvider
     var mediator = serviceProvider.GetRequiredService<IMediator>();
+
+    // Or through dependency injection
+    public class MyClass
+    {
+        private readonly IMediator _mediator;
+
+        public MyClass(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+    }
     ```
 
-9.  Send the request to the mediator:
+8.  Send the request to the mediator:
 
     ```csharp
     var response = await mediator.Send(new MyRequest());
@@ -73,10 +73,16 @@ This library provides a simple mediator implementation that allows you to decoup
 
 ## Extension Method Usage
 
-You can also use the `AddRouteDispatcher` extension method to register all `IRequestHandler` implementations in the provided assemblies with the `IServiceCollection`:
+It is **required** to use the `AddRouteDispatcher` extension method to register all `IRequestHandler` implementations. This method accepts a `params Assembly[]` array, so you can call it with one or more assemblies:
 
 ```csharp
-services.AddRouteDispatcher(typeof(MyRequestHandler).Assembly);
+// If handlers are in the same assembly, you can call it without arguments:
+services.AddRouteDispatcher();
+
+// Otherwise, specify one or more assemblies:
+services.AddRouteDispatcher(typeof(Program).Assembly);
+// Or
+services.AddRouteDispatcher(typeof(AnotherAssemblyWithRequestHandlers).Assembly, typeof(YetAnotherAssemblyWithRequestHandlers).Assembly);
 ```
 
 ## License
