@@ -6,7 +6,7 @@
     <RootNamespace>RouteDispatcher</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
-    <!-- <GeneratePackageOnBuild>true</GeneratePackageOnBuild> -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>RouteDispatcher</PackageId>
     <Authors>Pablo Mederos</Authors>
     <Description>A simple mediator implementation</Description>
