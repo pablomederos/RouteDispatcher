@@ -31,53 +31,17 @@
   </ItemGroup>
 
 
-  <Target Name="IncrementVersion" BeforeTargets="GenerateNuspec">
+  <Target Name="SetVersion" BeforeTargets="GenerateNuspec">
+    <ReadLinesFromFile 
+      File="$(MSBuildProjectDirectory)/../../.build-version">
+      <Output TaskParameter="Lines" PropertyName="CurrentVersion" />
+    </ReadLinesFromFile>
     
     <PropertyGroup>
-      <VersionAlreadyIncremented>$([System.IO.File]::Exists('$(MSBuildProjectDirectory)/../../.version_incremented'))</VersionAlreadyIncremented>
-    </PropertyGroup>
-  
-    <ReadLinesFromFile File="$(MSBuildProjectDirectory)/../../.build-version" Condition="'$(VersionAlreadyIncremented)' != 'true'">
-      <Output TaskParameter="Lines" ItemName="VersionLines" />
-    </ReadLinesFromFile>
-    
-    <PropertyGroup Condition="'$(VersionAlreadyIncremented)' != 'true'">
-      <CurrentVersion>@(VersionLines)</CurrentVersion>
-      <NextVersion>$([MSBuild]::Add($(CurrentVersion), 1))</NextVersion>
-      <Version>$([System.String]::Format('1.0.{0}', $(NextVersion)))</Version>
-      <PackageVersion>$(Version)</PackageVersion>
-      
-      <WriteVersionCommand>true</WriteVersionCommand>
-    </PropertyGroup>
-    
-    <WriteLinesToFile 
-      File="$(MSBuildProjectDirectory)/../../.build-version" 
-      Lines="$(NextVersion)" 
-      Overwrite="true" 
-      Condition="'$(WriteVersionCommand)' == 'true'" />
-      
-    <WriteLinesToFile 
-      File="$(MSBuildProjectDirectory)/../../.version_incremented" 
-      Lines="Incremented on: $([System.DateTime]::Now.ToString())" 
-      Overwrite="true" 
-      Condition="'$(WriteVersionCommand)' == 'true'" />
-      
-    <ReadLinesFromFile 
-      File="$(MSBuildProjectDirectory)/../../.build-version" 
-      Condition="'$(VersionAlreadyIncremented)' == 'true'">
-      <Output TaskParameter="Lines" PropertyName="NextVersion" />
-    </ReadLinesFromFile>
-    
-    <PropertyGroup Condition="'$(VersionAlreadyIncremented)' == 'true'">
-      <Version>$([System.String]::Format('1.0.{0}', $(NextVersion)))</Version>
+      <Version>$([System.String]::Format('1.0.{0}', $(CurrentVersion)))</Version>
       <PackageVersion>$(Version)</PackageVersion>
     </PropertyGroup>
-    
-    <Message Text="Versión incremental: $(NextVersion)" Importance="high" />
-    <Message Text="Version completa: $(Version)" Importance="high" />
-  </Target>
-  
-  <Target Name="CleanupVersionIncrement" AfterTargets="Build">
-    <Delete Files="$(MSBuildProjectDirectory)/../../.version_incremented" />
+
+    <Message Text="Full version: $(Version)" Importance="high" />
   </Target>
 </Project>
