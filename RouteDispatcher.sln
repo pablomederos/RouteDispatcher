@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher", "src\RouteDispatcher\RouteDispatcher.csproj", "{F9CB9419-32DF-4FF9-973A-B2073561F0B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.Api", "sample\RouteDispatcher.Api\RouteDispatcher.Api.csproj", "{A2964836-57D7-4D41-B84B-6D6BEC22DEFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.Api", "sample\RouteDispatcher.API\RouteDispatcher.API.csproj", "{A2964836-57D7-4D41-B84B-6D6BEC22DEFF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F956-CE84-757C-A364CCF449FC}"
 EndProject
