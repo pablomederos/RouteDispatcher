@@ -17,7 +17,7 @@ jobs:
           dotnet-version: '8.0'
 
       - name: List items
-        run: ls -l
+        run: ls -l && pwd
 
       - name: Restore dependencies
         run: dotnet restore RouteDispatcher.sln
