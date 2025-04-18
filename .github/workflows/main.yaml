@@ -23,7 +23,7 @@ jobs:
             9.0.x
 
       - name: Set build version
-        run: cat ${{ github.run_number }} > .build-version
+        run: echo ${{ github.run_number }} > .build-version
         
       - name: Restore dependencies
         run: dotnet restore RouteDispatcher.sln
