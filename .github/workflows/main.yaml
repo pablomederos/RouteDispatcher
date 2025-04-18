@@ -28,6 +28,9 @@ jobs:
       - name: Test
         run: dotnet test RouteDispatcher.sln --configuration Release --no-restore
 
+      - name: Set build version
+        run: cat ${{ github.run_number }} > .build-version
+
       - name: Build
         run: dotnet build src/RouteDispatcher/RouteDispatcher.csproj --configuration Release --no-restore
 
