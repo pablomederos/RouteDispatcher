@@ -1,8 +1,8 @@
 Author: Pablo Gabriel Mederos (La Cueva del Insecto)
 
-# RouteDispatcher
+# RouteDispatcher [![NuGet](https://img.shields.io/nuget/v/RouteDispatcher.svg)](https://www.nuget.org/packages/RouteDispatcher/)
 
-A simple mediator implementation for .NET.
+A simple mediator implementation for .NET. The package is available on NuGet Gallery.
 
 ## Description
 
