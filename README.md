@@ -16,25 +16,19 @@ This library provides a simple mediator implementation that allows you to decoup
     dotnet add package RouteDispatcher
     ```
 
-2.  Create a request interface:
+2.  Create a request class:
 
     ```csharp
-    public interface IMyRequest : IRequest<MyResponse> { }
+    public class MyRequest : IRequest<MyResponse> { }
     ```
 
-3.  Create a request class:
-
-    ```csharp
-    public class MyRequest : IMyRequest { }
-    ```
-
-4.  Create a response class:
+3.  Create a response class:
 
     ```csharp
     public class MyResponse { }
     ```
 
-5.  Create a request handler:
+4.  Create a request handler:
 
     ```csharp
     public class MyRequestHandler : IRequestHandler<MyRequest, MyResponse>
@@ -47,7 +41,7 @@ This library provides a simple mediator implementation that allows you to decoup
     }
     ```
 
-6.  Resolve the `IMediator` from the `IServiceProvider` or through dependency injection:
+5.  Resolve the `IMediator` from the `IServiceProvider` or through dependency injection:
 
     ```csharp
     // From IServiceProvider
@@ -65,10 +59,10 @@ This library provides a simple mediator implementation that allows you to decoup
     }
     ```
 
-8.  Send the request to the mediator:
+6.  Send the request to the mediator:
 
     ```csharp
-    var response = await mediator.Send(new MyRequest());
+    var response = await _mediator.Send(new MyRequest());
     ```
 
 ## Extension Method Usage
