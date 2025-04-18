@@ -22,14 +22,14 @@ jobs:
             8.0.x
             9.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore RouteDispatcher.sln
-
-      - name: Test
-        run: dotnet test RouteDispatcher.sln --configuration Release --no-restore
-
       - name: Set build version
         run: cat ${{ github.run_number }} > .build-version
+        
+      - name: Restore dependencies
+        run: dotnet restore RouteDispatcher.sln
+        
+      - name: Test
+        run: dotnet test RouteDispatcher.sln --configuration Release --no-restore
 
       - name: Build
         run: dotnet build src/RouteDispatcher/RouteDispatcher.csproj --configuration Release --no-restore
