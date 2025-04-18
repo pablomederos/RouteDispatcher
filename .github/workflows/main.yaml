@@ -14,12 +14,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install GitVersion Tool
-        run: dotnet tool install --global GitVersion.Tool
-
-      - name: Determine Version
-        run: dotnet-gitversion /output buildserver
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -27,6 +21,9 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore RouteDispatcher.sln
+
+      - name: Test
+        run: dotnet test RouteDispatcher.sln --configuration Release --no-build --no-restore
 
       - name: Build
         run: dotnet build src/RouteDispatcher/RouteDispatcher.csproj --configuration Release --no-restore
