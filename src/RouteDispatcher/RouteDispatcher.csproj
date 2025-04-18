@@ -5,10 +5,14 @@
     <LangVersion>10.0</LangVersion>
     <RootNamespace>RouteDispatcher</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>RouteDispatcher</PackageId>
     <Authors>Pablo Mederos</Authors>
     <Description>A simple mediator implementation</Description>
+    <RepositoryUrl>https://github.com/pablomederos/RouteDispatcher</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/pablomederos/RouteDispatcher</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
