@@ -21,15 +21,12 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore RouteDispatcher.sln
-        working-directory: ../
 
       - name: Build
-        run: dotnet build RouteDispatcher.sln --configuration Release --no-restore
-        working-directory: ../
+        run: dotnet build src/RouteDispatcher/RouteDispatcher.csproj --configuration Release --no-restore
 
       - name: Pack
         run: dotnet pack src/RouteDispatcher/RouteDispatcher.csproj --configuration Release --no-build
-        working-directory: ../
 
       - name: Push to NuGet
         run: dotnet nuget push src/RouteDispatcher/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
