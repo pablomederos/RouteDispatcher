@@ -26,4 +26,4 @@ jobs:
         run: dotnet pack src/RouteDispatcher/RouteDispatcher.csproj --configuration Release --no-build
 
       - name: Push to NuGet
-        run: dotnet nuget push "src/RouteDispatcher/bin/Release/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json"
+        run: dotnet nuget push "src/RouteDispatcher/bin/Release/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json" --skip-duplicate
