@@ -32,7 +32,7 @@ jobs:
         run: dotnet build src/RouteDispatcher/RouteDispatcher.csproj --configuration Release --no-restore
 
       - name: Pack
-        run: dotnet pack src/RouteDispatcher/RouteDispatcher.csproj --configuration Release /p:PackageVersion=$env:GitVersion_NuGetVersionV2 --no-build
+        run: dotnet pack src/RouteDispatcher/RouteDispatcher.csproj --configuration Release --no-build
 
       - name: Push to NuGet
         run: dotnet nuget push "src/RouteDispatcher/bin/Release/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json" --skip-duplicate
