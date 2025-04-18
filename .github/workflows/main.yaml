@@ -18,7 +18,7 @@ jobs:
         run: dotnet tool install --global GitVersion.Tool
 
       - name: Determine Version
-        run: gitversion /output buildserver
+        run: dotnet-gitversion /output buildserver
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
