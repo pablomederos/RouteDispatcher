@@ -42,7 +42,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-      <Version>$([System.String]::Format('1.0.{0}', $(CurrentVersion)))</Version>
+      <Version>$([System.String]::Format('1.1.{0}', $(CurrentVersion)))</Version>
       <PackageVersion>$(Version)</PackageVersion>
     </PropertyGroup>
 
