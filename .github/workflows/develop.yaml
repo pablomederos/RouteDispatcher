@@ -27,27 +27,20 @@ jobs:
         
       - name: Restore dependencies
         run: dotnet restore RouteDispatcher.sln
-        
-      - name: Test
-        run: dotnet test RouteDispatcher.sln --configuration Release --no-restore
 
       - name: Run tests with coverage
         run: |
-          dotnet test RouteDispatcher.sln --configuration Release --no-restore \
-            --logger "trx;LogFileName=test_results.trx" \
-            --results-directory ./TestResults \
-            /p:CollectCoverage=true \
-            /p:CoverletOutput=./TestResults/coverage/ \
-            /p:CoverletOutputFormat=lcov
+          dotnet test RouteDispatcher.sln \
+          --collect:"XPlat Code Coverage" --no-build \
+          /p:CollectCoverage=true \
+          /p:CoverletOutput=./TestResults/coverage/
 
-      - name: Upload test results (TRX)
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: ./TestResults/*.trx
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
-      - name: Upload code coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-coverage
-          path: ./TestResults/coverage/coverage.lcov
+      - name: Generate coverage report
+        run: |
+          reportgenerator       \
+          -reports:./test/**/TestResults/**/*.xml \
+          -targetdir:./TestResults/coverage-report \
+          -reporttypes:HtmlInline
