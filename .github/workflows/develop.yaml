@@ -51,4 +51,10 @@ jobs:
       - name: Show coverage summary in GitHub Actions
         run: |
           cat ./TestResults/coverage-report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./TestResults/coverage-report
         
