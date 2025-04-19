@@ -28,13 +28,13 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore RouteDispatcher.sln
 
-      - name: Restore dependencies
-        run: dotnet build RouteDispatcher.sln
+      - name: Build
+        run: dotnet build RouteDispatcher.sln -c Release --no-restore
 
       - name: Run tests with coverage
         run: |
           dotnet test RouteDispatcher.sln \
-          --collect:"XPlat Code Coverage" --no-build \
+          --collect:"XPlat Code Coverage" --no-build --no-restore \
           /p:CollectCoverage=true \
           /p:CoverletOutput=./TestResults
 
@@ -46,4 +46,9 @@ jobs:
           reportgenerator       \
           -reports:./test/**/TestResults/**/*.xml \
           -targetdir:./TestResults/coverage-report \
-          -reporttypes:HtmlInline
+          -reporttypes:HtmlInline;MarkdownSummaryGithub
+
+      - name: Show coverage summary in GitHub Actions
+        run: |
+          cat ./TestResults/coverage-report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+        
