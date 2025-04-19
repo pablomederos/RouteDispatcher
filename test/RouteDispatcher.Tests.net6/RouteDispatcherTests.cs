@@ -11,7 +11,7 @@ public class RouteDispatcherTests
     public class TestRequest : ITestRequest { }
     public class TestRequestHandler : IRequestHandler<TestRequest, string>
     {
-        public Task<string> Handle(TestRequest request)
+        public Task<string> Handle(TestRequest request, CancellationToken _)
         {
             return Task.FromResult("Test Response");
         }
@@ -31,7 +31,7 @@ public class RouteDispatcherTests
         var request = new TestRequest();
 
         // Act
-        var response = await mediator.Send(request);
+        var response = await mediator.Send(request, CancellationToken.None);
 
         // Assert
         Assert.Equal("Test Response", response);
@@ -47,7 +47,7 @@ public class RouteDispatcherTests
         var request = new TestRequest();
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => mediator.Send(request));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => mediator.Send(request, CancellationToken.None));
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class RouteDispatcherTests
         var request = new OtherRequest();
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => mediator.Send(request));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => mediator.Send(request, CancellationToken.None));
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class RouteDispatcherTests
         var request = new TestRequest();
 
         // Act
-        var response = await mediator.Send(request);
+        var response = await mediator.Send(request, CancellationToken.None);
 
         // Assert
         Assert.Equal("Test Response", response);

@@ -1,0 +1,60 @@
+name: NuGet Develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            8.0.x
+            9.0.x
+
+      - name: Set build version
+        run: echo ${{ github.run_number }} > .build-version
+        
+      - name: Restore dependencies
+        run: dotnet restore RouteDispatcher.sln
+
+      - name: Build
+        run: dotnet build RouteDispatcher.sln -c Release --no-restore
+
+      - name: Run tests with coverage
+        run: |
+          dotnet test RouteDispatcher.sln --no-build -c Release \
+          --collect:"XPlat Code Coverage" \
+          /p:CollectCoverage=true \
+          /p:CoverletOutput=./TestResults
+
+      - name: Install ReportGenerator
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate coverage report
+        run: |
+          reportgenerator       \
+          -reports:./test/**/TestResults/**/*.xml \
+          -targetdir:./TestResults/coverage-report \
+          -reporttypes:"HtmlInline;MarkdownSummaryGithub"
+
+      - name: Show coverage summary in GitHub Actions
+        run: |
+          cat ./TestResults/coverage-report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./TestResults/coverage-report
+        
