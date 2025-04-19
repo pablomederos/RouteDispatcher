@@ -1,21 +1,19 @@
-using RouteDispatcher;
 using RouteDispatcher.Contracts;
-using System.Threading.Tasks;
 
 namespace RouteDispatcher.API
 {
     public class MessageService
     {
-        private readonly IMediator _mediator;
+        private readonly IDispatcher _dispatcher;
 
-        public MessageService(IMediator mediator)
+        public MessageService(IDispatcher mediator)
         {
-            _mediator = mediator;
+            _dispatcher = mediator;
         }
 
         public async Task<string> GetMessage()
         {
-            return await _mediator.Send(new GetMessageRequest());
+            return await _dispatcher.Send(new GetMessageRequest());
         }
     }
 }

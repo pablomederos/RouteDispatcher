@@ -32,7 +32,8 @@ namespace RouteDispatcher.Extensions
             }
 
             services.AddSingleton<IHandlerCache, HandlerCacheService>();
-            services.AddScoped<IMediator, Mediator>();
+            services.AddScoped<IMediator, Dispatcher>();
+            services.AddScoped<IDispatcher, Dispatcher>();
 
             return services;
         }

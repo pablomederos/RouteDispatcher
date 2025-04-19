@@ -7,12 +7,12 @@ using System.Linq.Expressions;
 
 namespace RouteDispatcher.ConcreteServices
 {
-    public sealed class Mediator : IMediator
+    public sealed class Dispatcher : IMediator, IDispatcher
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IHandlerCache _handlerCache;
 
-        public Mediator(IServiceProvider serviceProvider)
+        public Dispatcher(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
             _handlerCache = (IHandlerCache) _serviceProvider.GetService(typeof(IHandlerCache));
