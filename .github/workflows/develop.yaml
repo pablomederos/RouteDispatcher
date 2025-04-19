@@ -46,7 +46,7 @@ jobs:
           reportgenerator       \
           -reports:./test/**/TestResults/**/*.xml \
           -targetdir:./TestResults/coverage-report \
-          -reporttypes:HtmlInline;MarkdownSummaryGithub
+          -reporttypes:"HtmlInline;MarkdownSummaryGithub"
 
       - name: Show coverage summary in GitHub Actions
         run: |
