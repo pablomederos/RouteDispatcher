@@ -1,8 +1,10 @@
 Author: Pablo Gabriel Mederos (La Cueva del Insecto)
 
 # RouteDispatcher [![NuGet](https://img.shields.io/nuget/v/RouteDispatcher.svg)](https://www.nuget.org/packages/RouteDispatcher/)
+[![Production Workflow](https://github.com/pablomederos/RouteDispatcher/actions/workflows/main.yaml/badge.svg)](https://github.com/pablomederos/RouteDispatcher/actions/workflows/main.yaml)
+[![Develop Test Workflow](https://github.com/pablomederos/RouteDispatcher/actions/workflows/develop.yaml/badge.svg)](https://github.com/pablomederos/RouteDispatcher/actions/workflows/develop.yaml)
 
-A simple mediator implementation for .NET. The package is available on NuGet Gallery.
+A simple mediator implementation for .NET
 
 ## Description
 
