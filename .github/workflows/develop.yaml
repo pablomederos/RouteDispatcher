@@ -34,7 +34,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           dotnet test RouteDispatcher.sln \
-          --collect:"XPlat Code Coverage" --no-build --no-restore \
+          --collect:"XPlat Code Coverage" --no-build \
           /p:CollectCoverage=true \
           /p:CoverletOutput=./TestResults
 
