@@ -37,6 +37,10 @@
       <Output TaskParameter="Lines" PropertyName="CurrentVersion" />
     </ReadLinesFromFile>
     
+    <PropertyGroup Condition="'$(CurrentVersion)' == ''">
+      <CurrentVersion>0</CurrentVersion>
+    </PropertyGroup>
+
     <PropertyGroup>
       <Version>$([System.String]::Format('1.0.{0}', $(CurrentVersion)))</Version>
       <PackageVersion>$(Version)</PackageVersion>
