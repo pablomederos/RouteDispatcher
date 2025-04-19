@@ -40,7 +40,7 @@ namespace RouteDispatcher.ConcreteServices
                     return CompileHandlerExpression<TResponse>(requestTypeKey, handlerType);
                 });
         
-        private CompiledHandlerCaller<TResponse> CompileHandlerExpression<TResponse>(Type requestType, Type handlerType)
+        private static CompiledHandlerCaller<TResponse> CompileHandlerExpression<TResponse>(Type requestType, Type handlerType)
         {
             
             var requestParameter = Expression.Parameter(typeof(IRequest<TResponse>), "request");
