@@ -5,13 +5,15 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher", "src\RouteDispatcher\RouteDispatcher.csproj", "{F9CB9419-32DF-4FF9-973A-B2073561F0B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.Api", "sample\RouteDispatcher.API\RouteDispatcher.API.csproj", "{A2964836-57D7-4D41-B84B-6D6BEC22DEFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.API", "sample\RouteDispatcher.API\RouteDispatcher.API.csproj", "{A2964836-57D7-4D41-B84B-6D6BEC22DEFF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F956-CE84-757C-A364CCF449FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.Tests.net6", "test\RouteDispatcher.Tests.net6\RouteDispatcher.Tests.net6.csproj", "{B86C306B-C411-49F7-8900-CC701CCB5EC9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.Tests.net8", "test\RouteDispatcher.Tests.net8\RouteDispatcher.Tests.net8.csproj", "{62E4D60F-8262-4A91-BDBD-28678DDCA4C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.Tests.Common", "test\RouteDispatcher.Tests.Common\RouteDispatcher.Tests.Common.csproj", "{F98574CD-D448-4F0F-B34C-3CD38B74128C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,18 @@ Global
 		{62E4D60F-8262-4A91-BDBD-28678DDCA4C1}.Release|x64.Build.0 = Release|Any CPU
 		{62E4D60F-8262-4A91-BDBD-28678DDCA4C1}.Release|x86.ActiveCfg = Release|Any CPU
 		{62E4D60F-8262-4A91-BDBD-28678DDCA4C1}.Release|x86.Build.0 = Release|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Debug|x64.Build.0 = Debug|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Debug|x86.Build.0 = Debug|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Release|x64.ActiveCfg = Release|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Release|x64.Build.0 = Release|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Release|x86.ActiveCfg = Release|Any CPU
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,5 +92,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B86C306B-C411-49F7-8900-CC701CCB5EC9} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 		{62E4D60F-8262-4A91-BDBD-28678DDCA4C1} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
+		{F98574CD-D448-4F0F-B34C-3CD38B74128C} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 	EndGlobalSection
 EndGlobal

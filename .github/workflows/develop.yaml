@@ -1,4 +1,4 @@
-name: NuGet Develop
+name: NuGet Test
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - develop
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
