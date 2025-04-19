@@ -16,8 +16,7 @@ namespace RouteDispatcher.ConcreteServices
 
         public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
         {
-            if(cancellationToken.IsCancellationRequested)
-                return Task.FromCanceled<TResponse>(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
 
             var requestType = request.GetType();
             var handlerType = typeof(IRequestHandler<,>)
@@ -29,8 +28,7 @@ namespace RouteDispatcher.ConcreteServices
 
             var methodInfo = handlerType.GetMethod("Handle");
 
-            if(cancellationToken.IsCancellationRequested)
-                return Task.FromCanceled<TResponse>(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             
             return (Task<TResponse>)methodInfo.Invoke(handler, new object[] { request, cancellationToken });
         }

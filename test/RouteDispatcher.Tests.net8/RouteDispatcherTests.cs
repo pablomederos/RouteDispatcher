@@ -80,4 +80,37 @@ public class RouteDispatcherTests
         // Assert
         Assert.Equal("Test Response", response);
     }
+    [Fact]
+    public async Task Send_ValidRequest_NoCancellationToken_ReturnsResponse()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = new Mediator(serviceProvider);
+        var request = new TestRequest();
+
+        // Act
+        var response = await mediator.Send(request);
+
+        // Assert
+        Assert.Equal("Test Response", response);
+    }
+
+    [Fact]
+    public async Task Send_CancelledCancellationToken_DoesNotExecuteHandler()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = new Mediator(serviceProvider);
+        var request = new TestRequest();
+        using var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Cancel();
+        var cancellationToken = cancellationTokenSource.Token;
+
+        // Act
+        await Assert.ThrowsAsync<OperationCanceledException>(() => mediator.Send(request, cancellationToken));
+    }
 }
