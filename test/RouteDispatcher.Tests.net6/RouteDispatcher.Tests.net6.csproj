@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RouteDispatcher\RouteDispatcher.csproj" />
+    <ProjectReference Include="..\RouteDispatcher.Tests.Common\RouteDispatcher.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

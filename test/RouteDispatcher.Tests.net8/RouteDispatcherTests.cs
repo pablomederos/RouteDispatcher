@@ -2,23 +2,12 @@ using RouteDispatcher.ConcreteServices;
 using RouteDispatcher.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using RouteDispatcher.Extensions;
+using RouteDispatcher.Tests.Common;
 
 namespace RouteDispatcher.Tests.net8;
 
 public class RouteDispatcherTests
 {
-    public interface ITestRequest : IRequest<string> { }
-    public class TestRequest : ITestRequest { }
-    public class TestRequestHandler : IRequestHandler<TestRequest, string>
-    {
-        public Task<string> Handle(TestRequest request, CancellationToken _)
-        {
-            return Task.FromResult("Test Response");
-        }
-    }
-
-    public interface IOtherRequest : IRequest<string> { }
-    public class OtherRequest : IOtherRequest { }
 
     [Fact]
     public async Task Send_ValidRequest_ReturnsResponse()
