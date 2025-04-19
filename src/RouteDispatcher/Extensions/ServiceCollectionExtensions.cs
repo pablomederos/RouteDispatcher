@@ -31,6 +31,7 @@ namespace RouteDispatcher.Extensions
                 services.AddTransient(interfaceType, handlerType);
             }
 
+            services.AddSingleton<IHandlerCache, HandlerCacheService>();
             services.AddScoped<IMediator, Mediator>();
 
             return services;

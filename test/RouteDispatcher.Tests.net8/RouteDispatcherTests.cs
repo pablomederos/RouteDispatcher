@@ -3,6 +3,7 @@ using RouteDispatcher.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using RouteDispatcher.Extensions;
 using RouteDispatcher.Tests.Common;
+using RouteDispatcher.Exceptions;
 
 namespace RouteDispatcher.Tests.net8;
 
@@ -14,6 +15,7 @@ public class RouteDispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
         var serviceProvider = services.BuildServiceProvider();
         var mediator = new Mediator(serviceProvider);
@@ -31,12 +33,13 @@ public class RouteDispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddTransient<IHandlerCache, HandlerCacheService>();
         var serviceProvider = services.BuildServiceProvider();
         var mediator = new Mediator(serviceProvider);
         var request = new TestRequest();
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => mediator.Send(request, CancellationToken.None));
+        await Assert.ThrowsAsync<HandlerNotFoundException>(() => mediator.Send(request, CancellationToken.None));
     }
 
     [Fact]
@@ -44,13 +47,14 @@ public class RouteDispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
         var serviceProvider = services.BuildServiceProvider();
         var mediator = new Mediator(serviceProvider);
         var request = new OtherRequest();
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => mediator.Send(request, CancellationToken.None));
+        await Assert.ThrowsAsync<HandlerNotFoundException>(() => mediator.Send(request, CancellationToken.None));
     }
 
     [Fact]
@@ -74,7 +78,7 @@ public class RouteDispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
+        services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
         var serviceProvider = services.BuildServiceProvider();
         var mediator = new Mediator(serviceProvider);
         var request = new TestRequest();
@@ -91,7 +95,7 @@ public class RouteDispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
+        services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
         var serviceProvider = services.BuildServiceProvider();
         var mediator = new Mediator(serviceProvider);
         var request = new TestRequest();
@@ -101,5 +105,25 @@ public class RouteDispatcherTests
 
         // Act
         await Assert.ThrowsAsync<OperationCanceledException>(() => mediator.Send(request, cancellationToken));
+    }
+    
+    [Fact]
+    public async Task Send_NewScope_NoException()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
+        var serviceProvider = services.BuildServiceProvider();
+        var mediator = serviceProvider.GetRequiredService<IMediator>();
+        var request = new TestRequest();
+
+        // Act
+        await mediator.Send(request);
+
+        using var scope = serviceProvider.CreateScope();
+        var scopedMediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+        // Assert
+        await scopedMediator.Send(request);
     }
 }
