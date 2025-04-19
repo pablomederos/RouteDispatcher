@@ -30,3 +30,24 @@ jobs:
         
       - name: Test
         run: dotnet test RouteDispatcher.sln --configuration Release --no-restore
+
+      - name: Run tests with coverage
+        run: |
+          dotnet test RouteDispatcher.sln --configuration Release --no-restore \
+            --logger "trx;LogFileName=test_results.trx" \
+            --results-directory ./TestResults \
+            /p:CollectCoverage=true \
+            /p:CoverletOutput=./TestResults/coverage/ \
+            /p:CoverletOutputFormat=lcov
+
+      - name: Upload test results (TRX)
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ./TestResults/*.trx
+
+      - name: Upload code coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage
+          path: ./TestResults/coverage/coverage.lcov
