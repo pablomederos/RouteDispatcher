@@ -1,3 +1,5 @@
+#nullable enable
+
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Linq;
@@ -5,19 +7,50 @@ using RouteDispatcher.Contracts;
 using RouteDispatcher.ConcreteServices;
 using System;
 using System.Collections.Generic;
+using RouteDispatcher.Models;
 
 namespace RouteDispatcher.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddRouteDispatcher(this IServiceCollection services, Action<DispatcherConfiguration> options)
+        {
+            var configurationOptions = new DispatcherConfiguration();
+            options(configurationOptions);
+
+            ConfigureServices(services, configurationOptions);
+
+            return services;
+        }
+
         public static IServiceCollection AddRouteDispatcher(this IServiceCollection services, params Assembly[] assemblies)
         {
-            var requestHandlerTypes = assemblies.Length == 0
+            ConfigureServices(services, assemblies);
+            return services;
+        }
+
+        private static void ConfigureServices(
+            IServiceCollection services,
+            Assembly[] assemblies
+        ) => ConfigureServices(services, new DispatcherConfiguration()
+        { 
+            Assemblies = assemblies
+        });
+
+        private static void ConfigureServices(
+            IServiceCollection services,
+            DispatcherConfiguration configurationOptions
+        )
+        {
+            var requestHandlerTypes = configurationOptions
+                .Assemblies
+                .Length == 0
                 ? Assembly
                     .GetCallingAssembly()
                     .GetTypes()
                     .GetHandlerTypes()
-                : assemblies
+                : configurationOptions
+                    .Assemblies
                     .SelectMany(a => a.GetTypes())
                     .GetHandlerTypes();
 
@@ -33,12 +66,14 @@ namespace RouteDispatcher.Extensions
 
             services.AddSingleton<IHandlerCache, HandlerCacheService>();
 #pragma warning disable CS0618 // Type or member is obsolete
-            services.AddScoped<IMediator, Dispatcher>();
+            services.AddScoped<IMediator, Dispatcher>(BuildDispatcher(configurationOptions));
 #pragma warning restore CS0618 // Type or member is obsolete
-            services.AddScoped<IDispatcher, Dispatcher>();
-
-            return services;
+            services.AddScoped<IDispatcher, Dispatcher>(BuildDispatcher(configurationOptions));
         }
+
+        private static Func<IServiceProvider, Dispatcher> BuildDispatcher(DispatcherConfiguration configurationOptions)
+            => serviceProvider
+            => new Dispatcher(serviceProvider, configurationOptions);
 
         private static Type[] GetHandlerTypes(this IEnumerable<Type> types)
             => types

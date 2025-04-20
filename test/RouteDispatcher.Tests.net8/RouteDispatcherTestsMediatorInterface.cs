@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RouteDispatcher.Extensions;
 using RouteDispatcher.Tests.Common;
 using RouteDispatcher.Exceptions;
+using RouteDispatcher.Models;
 
 namespace RouteDispatcher.Tests.net8;
 
@@ -18,7 +19,7 @@ public class RouteDispatcherTestsMediatorInterface
         var services = new ServiceCollection();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
-        services.AddTransient<IMediator, Dispatcher>();
+        services.AddTransient<IMediator, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest();
@@ -36,7 +37,7 @@ public class RouteDispatcherTestsMediatorInterface
         // Arrange
         var services = new ServiceCollection();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
-        services.AddTransient<IMediator, Dispatcher>();
+        services.AddTransient<IMediator, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest();
@@ -52,7 +53,7 @@ public class RouteDispatcherTestsMediatorInterface
         var services = new ServiceCollection();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
-        services.AddTransient<IMediator, Dispatcher>();
+        services.AddTransient<IMediator, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new OtherRequest();

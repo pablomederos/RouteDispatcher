@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RouteDispatcher.Extensions;
 using RouteDispatcher.Tests.Common;
 using RouteDispatcher.Exceptions;
+using RouteDispatcher.Models;
 
 namespace RouteDispatcher.Tests.net6;
 
@@ -16,7 +17,7 @@ public class RouteDispatcherTests
         var services = new ServiceCollection();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
-        services.AddTransient<IDispatcher, Dispatcher>();
+        services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new TestRequest();
@@ -34,7 +35,7 @@ public class RouteDispatcherTests
         // Arrange
         var services = new ServiceCollection();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
-        services.AddTransient<IDispatcher, Dispatcher>();
+        services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new TestRequest();
@@ -50,7 +51,7 @@ public class RouteDispatcherTests
         var services = new ServiceCollection();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
-        services.AddTransient<IDispatcher, Dispatcher>();
+        services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new OtherRequest();
