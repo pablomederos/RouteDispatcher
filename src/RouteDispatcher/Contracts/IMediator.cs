@@ -9,7 +9,7 @@ namespace RouteDispatcher.Contracts
     /// This interface is obsolete. Use <see cref="IDispatcher"/> instead.
     /// </remarks>
     /// </summary>
-    [Obsolete("Use IDispatcher interface instead.")]
+    [Obsolete("Use IDispatcher interface instead.", error: false)]
     public interface IMediator
     {
         Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default);

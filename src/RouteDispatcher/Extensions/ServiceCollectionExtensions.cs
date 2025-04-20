@@ -32,7 +32,9 @@ namespace RouteDispatcher.Extensions
             }
 
             services.AddSingleton<IHandlerCache, HandlerCacheService>();
+#pragma warning disable CS0618 // Type or member is obsolete
             services.AddScoped<IMediator, Dispatcher>();
+#pragma warning restore CS0618 // Type or member is obsolete
             services.AddScoped<IDispatcher, Dispatcher>();
 
             return services;
