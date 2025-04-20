@@ -2,10 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using RouteDispatcher.Extensions;
 using RouteDispatcher.Contracts;
 using RouteDispatcher.Models;
-using System.Reflection;
 using RouteDispatcher.Tests.Common;
 
-namespace RouteDispatcher.Tests.net6;
+namespace RouteDispatcher.Tests.net8;
 
 public class DispatcherConfigurationTests
 {
@@ -18,7 +17,7 @@ public class DispatcherConfigurationTests
         // Act
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(DispatcherConfigurationTests).Assembly };
+            options.Assemblies = [ typeof(DispatcherConfigurationTests).Assembly ];
         });
 
         // Assert
@@ -36,7 +35,7 @@ public class DispatcherConfigurationTests
         // Act
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(DispatcherConfigurationTests).Assembly, typeof(IDispatcher).Assembly };
+            options.Assemblies = [ typeof(DispatcherConfigurationTests).Assembly, typeof(IDispatcher).Assembly ];
         });
 
         // Assert
@@ -67,7 +66,7 @@ public class DispatcherConfigurationTests
         // Act
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = Array.Empty<Assembly>();
+            options.Assemblies = [];
         });
 
         // Assert
@@ -100,7 +99,7 @@ public class DispatcherConfigurationTests
 
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(TestRequest).Assembly };
+            options.Assemblies = [ typeof(TestRequest).Assembly ];
             options.UseHandlersCache = true;
         });
 
@@ -124,7 +123,7 @@ public class DispatcherConfigurationTests
 
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(TestRequest).Assembly };
+            options.Assemblies = [ typeof(TestRequest).Assembly ];
             options.UseHandlersCache = false;
         });
 
@@ -148,7 +147,7 @@ public class DispatcherConfigurationTests
 
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(TestRequest).Assembly };
+            options.Assemblies = [ typeof(TestRequest).Assembly ];
             options.UseHandlersCache = true;
             options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1);
         });
@@ -174,7 +173,7 @@ public class DispatcherConfigurationTests
 
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(TestRequest).Assembly };
+            options.Assemblies = [ typeof(TestRequest).Assembly ];
             options.UseHandlersCache = true;
             options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1);
         });
@@ -202,7 +201,7 @@ public class DispatcherConfigurationTests
 
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(TestRequest).Assembly };
+            options.Assemblies = [ typeof(TestRequest).Assembly ];
             options.UseHandlersCache = true;
             options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1);
         });
@@ -231,7 +230,7 @@ public class DispatcherConfigurationTests
 
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(TestRequest).Assembly };
+            options.Assemblies = [ typeof(TestRequest).Assembly ];
             options.UseHandlersCache = true;
             options.KeepCacheForEver = true;
             options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1);

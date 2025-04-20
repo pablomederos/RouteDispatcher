@@ -79,6 +79,22 @@ services.AddRouteDispatcher(typeof(Program).Assembly);
 services.AddRouteDispatcher(typeof(AnotherAssemblyWithRequestHandlers).Assembly, typeof(YetAnotherAssemblyWithRequestHandlers).Assembly);
 ```
 
+You can also configure the dispatcher with caching using the `AddRouteDispatcher` extension method with an `Action<DispatcherConfiguration>`. The cache is used to avoid the use of reflection when obtaining the handler type again and again, and reuse a type previously discovered:
+
+```csharp
+services.AddRouteDispatcher(options =>
+{
+    // options.Assemblies: If not set, the current assembly will be used.
+    options.Assemblies = new[] { typeof(Program).Assembly };
+    // options.UseHandlersCache: If false, the following configurations are not needed.
+    options.UseHandlersCache = true;
+    // options.DiscardCachedHandlersTimeout: Allows the GC to clean up memory from handlers that are not used for a long time.
+    options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(30); // default to TimeSpan.FromSeconds(30)
+    // options.KeepCacheForEver: Prevents the deletion of elements from the cache.
+    options.KeepCacheForEver = false; // Default to false
+});
+```
+
 ## License
 
 MIT
