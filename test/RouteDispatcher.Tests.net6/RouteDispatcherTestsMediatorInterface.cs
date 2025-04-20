@@ -7,6 +7,7 @@ using RouteDispatcher.Exceptions;
 
 namespace RouteDispatcher.Tests.net6;
 
+[Obsolete("Legacy test for IMediator interface. Use IDispatcher interface instead.")]
 public class RouteDispatcherTestsMediatorInterface
 {
 
