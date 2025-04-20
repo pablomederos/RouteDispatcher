@@ -1,14 +1,22 @@
 using System;
 using System.Collections.Concurrent;
 using RouteDispatcher.Contracts;
+using RouteDispatcher.Models;
 
 namespace RouteDispatcher.ConcreteServices
 {
-    public sealed class HandlerCacheService : IHandlerCache
+    internal sealed class HandlerCacheService : IHandlerCache
     {
-        private readonly ConcurrentDictionary<Type, Delegate> _handlerCache = new();
+        private readonly ConcurrentDictionary<Type, object> _handlerCache = new();
 
-        public CompiledHandlerCaller<TResponse> GetOrAdd<TResponse>(Type requestType, Func<Type, CompiledHandlerCaller<TResponse>> value)
-            => (CompiledHandlerCaller<TResponse>) _handlerCache.GetOrAdd(requestType, value);
+        public CompiledAutocleanDelegate<TResponse> GetOrAdd<TResponse>(Type requestType, Func<Type, CompiledAutocleanDelegate<TResponse>> value)
+            => (CompiledAutocleanDelegate<TResponse>)_handlerCache
+                .GetOrAdd(requestType, value);
+
+        public void TryRemove(Type requestType)
+            => _handlerCache.TryRemove(requestType, out var _);
+            
+        public bool IsEmpty()
+            => _handlerCache.IsEmpty;
     }
 }

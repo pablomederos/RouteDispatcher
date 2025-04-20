@@ -1,5 +1,3 @@
-Author: Pablo Gabriel Mederos (La Cueva del Insecto)
-
 # RouteDispatcher [![NuGet](https://img.shields.io/nuget/v/RouteDispatcher.svg)](https://www.nuget.org/packages/RouteDispatcher/)
 [![Production Workflow](https://github.com/pablomederos/RouteDispatcher/actions/workflows/main.yaml/badge.svg)](https://github.com/pablomederos/RouteDispatcher/actions/workflows/main.yaml)
 [![Develop Test Workflow](https://github.com/pablomederos/RouteDispatcher/actions/workflows/develop.yaml/badge.svg)](https://github.com/pablomederos/RouteDispatcher/actions/workflows/develop.yaml)
@@ -43,20 +41,20 @@ This library provides a simple mediator implementation that allows you to decoup
     }
     ```
 
-5.  Resolve the `IMediator` from the `IServiceProvider` or through dependency injection:
+5.  Resolve the `IDispatcher` from the `IServiceProvider` or through dependency injection:
 
     ```csharp
     // From IServiceProvider
-    var mediator = serviceProvider.GetRequiredService<IMediator>();
+    var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
 
     // Or through dependency injection
     public class MyClass
     {
-        private readonly IMediator _mediator;
+        private readonly IDispatcher _dispatcher;
 
-        public MyClass(IMediator mediator)
+        public MyClass(IDispatcher dispatcher)
         {
-            _mediator = mediator;
+            _dispatcher = dispatcher;
         }
     }
     ```
@@ -64,7 +62,7 @@ This library provides a simple mediator implementation that allows you to decoup
 6.  Send the request to the mediator:
 
     ```csharp
-    var response = await _mediator.Send(new MyRequest());
+    var response = await _dispatcher.Send(new MyRequest());
     ```
 
 ## Extension Method Usage
@@ -79,6 +77,22 @@ services.AddRouteDispatcher();
 services.AddRouteDispatcher(typeof(Program).Assembly);
 // Or
 services.AddRouteDispatcher(typeof(AnotherAssemblyWithRequestHandlers).Assembly, typeof(YetAnotherAssemblyWithRequestHandlers).Assembly);
+```
+
+You can also configure the dispatcher with caching using the `AddRouteDispatcher` extension method with an `Action<DispatcherConfiguration>`. The cache is used to avoid the use of reflection when obtaining the handler type again and again, and reuse a type previously discovered:
+
+```csharp
+services.AddRouteDispatcher(options =>
+{
+    // options.Assemblies: If not set, the current assembly will be used.
+    options.Assemblies = new[] { typeof(Program).Assembly };
+    // options.UseHandlersCache: If false, the following configurations are not needed.
+    options.UseHandlersCache = true;
+    // options.DiscardCachedHandlersTimeout: Allows the GC to clean up memory from handlers that are not used for a long time.
+    options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(30); // default to TimeSpan.FromSeconds(30)
+    // options.KeepCacheForEver: Prevents the deletion of elements from the cache.
+    options.KeepCacheForEver = false; // Default to false
+});
 ```
 
 ## License

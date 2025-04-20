@@ -6,20 +6,22 @@ using RouteDispatcher.Tests.Common;
 using RouteDispatcher.Exceptions;
 using RouteDispatcher.Models;
 
-namespace RouteDispatcher.Tests.net6;
+namespace RouteDispatcher.Tests.net8;
 
-public class RouteDispatcherTests
+[Obsolete("Legacy test for IMediator interface. Use IDispatcher interface instead.")]
+public class RouteDispatcherTestsMediatorInterface
 {
+
     [Fact]
     public async Task Send_ValidRequest_ReturnsResponse()
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
-        services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
+        services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
+        services.AddTransient<IMediator, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest();
 
         // Act
@@ -35,9 +37,9 @@ public class RouteDispatcherTests
         // Arrange
         var services = new ServiceCollection();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
-        services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
+        services.AddTransient<IMediator, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest();
 
         // Act & Assert
@@ -51,9 +53,9 @@ public class RouteDispatcherTests
         var services = new ServiceCollection();
         services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
-        services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
+        services.AddTransient<IMediator, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new OtherRequest();
 
         // Act & Assert
@@ -67,16 +69,15 @@ public class RouteDispatcherTests
         var services = new ServiceCollection();
         services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var mediator = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest();
 
         // Act
-        var response = await dispatcher.Send(request, CancellationToken.None);
+        var response = await mediator.Send(request, CancellationToken.None);
 
         // Assert
         Assert.Equal("Test Response", response);
     }
-
     [Fact]
     public async Task Send_ValidRequest_NoCancellationToken_ReturnsResponse()
     {
@@ -84,7 +85,7 @@ public class RouteDispatcherTests
         var services = new ServiceCollection();
         services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest();
 
         // Act
@@ -101,7 +102,7 @@ public class RouteDispatcherTests
         var services = new ServiceCollection();
         services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest();
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();
@@ -110,7 +111,7 @@ public class RouteDispatcherTests
         // Act
         await Assert.ThrowsAsync<OperationCanceledException>(() => dispatcher.Send(request, cancellationToken));
     }
-
+    
     [Fact]
     public async Task Send_NewScope_NoException()
     {
@@ -118,18 +119,16 @@ public class RouteDispatcherTests
         var services = new ServiceCollection();
         services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var dispatcher = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest();
 
         // Act
         await dispatcher.Send(request);
 
-        using (var scope = serviceProvider.CreateScope())
-        {
-            var scopedDispatcher = scope.ServiceProvider.GetRequiredService<IDispatcher>();
+        using var scope = serviceProvider.CreateScope();
+        var scopedDispatcher = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-            // Assert
-            await scopedDispatcher.Send(request);
-        }
+        // Assert
+        await scopedDispatcher.Send(request);
     }
 }

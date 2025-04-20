@@ -4,18 +4,23 @@ using RouteDispatcher.Contracts;
 using System.Threading;
 using RouteDispatcher.Exceptions;
 using System.Linq.Expressions;
+using RouteDispatcher.Models;
 
 namespace RouteDispatcher.ConcreteServices
 {
-    public sealed class Mediator : IMediator
+#pragma warning disable CS0618 // Type or member is obsolete
+    public sealed class Dispatcher : IMediator, IDispatcher
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IHandlerCache _handlerCache;
+        private readonly DispatcherConfiguration _configurationOptions;
 
-        public Mediator(IServiceProvider serviceProvider)
+        public Dispatcher(IServiceProvider serviceProvider, DispatcherConfiguration configurationOptions)
         {
             _serviceProvider = serviceProvider;
-            _handlerCache = (IHandlerCache) _serviceProvider.GetService(typeof(IHandlerCache));
+            _configurationOptions = configurationOptions;
+            _handlerCache = (IHandlerCache)_serviceProvider.GetService(typeof(IHandlerCache));
         }
 
         public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
@@ -24,23 +29,62 @@ namespace RouteDispatcher.ConcreteServices
 
             var requestType = request.GetType();
 
-            CompiledHandlerCaller<TResponse> handler = GetHandler<TResponse>(requestType);
+            HandlerDelegate<TResponse> handler = _configurationOptions.UseHandlersCache
+                ? GetHandlerCompiled<TResponse>(requestType)
+                : GetHandler<TResponse>(requestType);
 
             cancellationToken.ThrowIfCancellationRequested();
 
             return handler(request, _serviceProvider, cancellationToken);
         }
-        
-        private CompiledHandlerCaller<TResponse> GetHandler<TResponse>(Type requestType)
-            => _handlerCache.GetOrAdd(requestType, requestTypeKey =>
+
+        private HandlerDelegate<TResponse> GetHandler<TResponse>(Type requestType)
+        {
+             var handlerType = typeof(IRequestHandler<,>)
+                 .MakeGenericType(requestType, typeof(TResponse));
+ 
+             var handler = _serviceProvider
+                 .GetService(handlerType)
+                 ?? throw new HandlerNotFoundException($"No handler found for request type", requestType);
+ 
+             var methodInfo = handlerType.GetMethod("Handle");
+ 
+             return (
+                request,
+                serviceProvider,
+                cancellationToken
+            ) => (Task<TResponse>) methodInfo.Invoke(handler,
+                new object[] { request, cancellationToken }
+            );
+        }
+        private HandlerDelegate<TResponse> GetHandlerCompiled<TResponse>(Type requestType)
+        {
+            var keepCacheForEver = _configurationOptions.KeepCacheForEver;
+            var cleanupTimeout = _configurationOptions.DiscardCachedHandlersTimeout;
+
+            CompiledAutocleanDelegate<TResponse> compiled = _handlerCache.GetOrAdd(requestType, requestTypeKey =>
                 {
                     var handlerType = typeof(IRequestHandler<,>)
                         .MakeGenericType(requestTypeKey, typeof(TResponse));
 
-                    return CompileHandlerExpression<TResponse>(requestTypeKey, handlerType);
+                    var compiledExpression = CompileHandlerExpression<TResponse>(requestTypeKey, handlerType);
+
+                    return new CompiledAutocleanDelegate<TResponse>(
+                        _handlerCache,
+                        requestTypeKey,
+                        compiledExpression,
+                        cleanupTimeout,
+                        keepCacheForEver
+                    );
                 });
+
+            if (!keepCacheForEver)
+                compiled.Refresh(cleanupTimeout);
+
+            return compiled.Value;
+        }
         
-        private static CompiledHandlerCaller<TResponse> CompileHandlerExpression<TResponse>(Type requestType, Type handlerType)
+        private static HandlerDelegate<TResponse> CompileHandlerExpression<TResponse>(Type requestType, Type handlerType)
         {
             
             var requestParameter = Expression.Parameter(typeof(IRequest<TResponse>), "request");
@@ -84,7 +128,7 @@ namespace RouteDispatcher.ConcreteServices
                 conditionalExpr);
 
             var functionExpression = Expression
-                .Lambda<CompiledHandlerCaller<TResponse>>(
+                .Lambda<HandlerDelegate<TResponse>>(
                 block,
                 requestParameter,
                 serviceProviderParameter,

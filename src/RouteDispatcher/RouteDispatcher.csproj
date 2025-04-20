@@ -18,6 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="RouteDispatcher.Tests.net6" />
+    <InternalsVisibleTo Include="RouteDispatcher.Tests.net8" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
