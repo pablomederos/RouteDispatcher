@@ -7,7 +7,9 @@ using System.Linq.Expressions;
 
 namespace RouteDispatcher.ConcreteServices
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     public sealed class Dispatcher : IMediator, IDispatcher
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IHandlerCache _handlerCache;
