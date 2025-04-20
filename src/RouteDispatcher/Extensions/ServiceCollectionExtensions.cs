@@ -15,8 +15,24 @@ namespace RouteDispatcher.Extensions
     {
         public static IServiceCollection AddRouteDispatcher(this IServiceCollection services, Action<DispatcherConfiguration> options)
         {
+            if(options == null)
+                throw new ArgumentNullException(nameof(options), "Configuration action cannot be null.");
+
             var configurationOptions = new DispatcherConfiguration();
             options(configurationOptions);
+
+
+
+            configurationOptions.Assemblies = configurationOptions
+                .Assemblies
+                .Length == 0
+                ? new[]
+                    {
+                        Assembly
+                            .GetCallingAssembly()
+                    }
+                : configurationOptions
+                    .Assemblies;
 
             ConfigureServices(services, configurationOptions);
 
@@ -25,7 +41,16 @@ namespace RouteDispatcher.Extensions
 
         public static IServiceCollection AddRouteDispatcher(this IServiceCollection services, params Assembly[] assemblies)
         {
-            ConfigureServices(services, assemblies);
+            Assembly[] targetAssembies = assemblies.Length == 0
+                ? new[]
+                    {
+                        Assembly
+                            .GetCallingAssembly()
+                    }
+                : assemblies;
+                
+            ConfigureServices(services, targetAssembies);
+
             return services;
         }
 
@@ -42,14 +67,7 @@ namespace RouteDispatcher.Extensions
             DispatcherConfiguration configurationOptions
         )
         {
-            var requestHandlerTypes = configurationOptions
-                .Assemblies
-                .Length == 0
-                ? Assembly
-                    .GetCallingAssembly()
-                    .GetTypes()
-                    .GetHandlerTypes()
-                : configurationOptions
+            Type[] requestHandlerTypes = configurationOptions
                     .Assemblies
                     .SelectMany(a => a.GetTypes())
                     .GetHandlerTypes();

@@ -11,10 +11,12 @@ namespace RouteDispatcher.Models
 
 
         public bool UseHandlersCache { get; set; } = false;
+        public bool KeepCacheForEver { get; set; } = false;
         public TimeSpan DiscardCachedHandlersTimeout
         {
             get => _discardCachedHandlersTimeout;
-            set {
+            set
+            {
                 if (value == TimeSpan.Zero)
                     throw new ArgumentOutOfRangeException("DiscardCachedHandlersTimeout", "Timeout cannot be zero");
 

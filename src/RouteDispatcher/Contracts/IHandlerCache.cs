@@ -9,6 +9,7 @@ namespace RouteDispatcher.Contracts
     {
         CompiledAutocleanDelegate<TResponse> GetOrAdd<TResponse>(Type requestType, Func<Type, CompiledAutocleanDelegate<TResponse>> value);
         void TryRemove(Type item);
+        bool IsEmpty();
     }
 
     public delegate Task<TResponse> HandlerDelegate<TResponse>(

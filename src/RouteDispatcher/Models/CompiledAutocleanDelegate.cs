@@ -10,22 +10,26 @@ namespace RouteDispatcher.Models
             IHandlerCache container,
             Type requestType,
             HandlerDelegate<TResponse> value,
-            TimeSpan cleanTimeout
+            TimeSpan cleanTimeout,
+            bool keepCacheForEver
         )
         {
             Value = value;
-            _timeout = new Timer
-            {
-                Interval = cleanTimeout.TotalMilliseconds
-            };
-            _timeout.Elapsed += (sender, args) =>
-            {
-                _isDisposed = true;
-                container.TryRemove(requestType);
-                _timeout.Dispose();
-            };
+            if (!keepCacheForEver)
+            { 
+                _timeout = new Timer
+                {
+                    Interval = cleanTimeout.TotalMilliseconds
+                };
+                _timeout.Elapsed += (sender, args) =>
+                {
+                    _isDisposed = true;
+                    container.TryRemove(requestType);
+                    _timeout.Dispose();
+                };
 
-            _timeout.Start();
+                _timeout.Start();
+            }
         }
 
         public HandlerDelegate<TResponse> Value { get; }
@@ -34,7 +38,7 @@ namespace RouteDispatcher.Models
 
         public void Refresh(TimeSpan timeSpan = default)
         {
-            if(_isDisposed)
+            if(_isDisposed || _timeout == null)
                 return;
 
             _timeout.Interval = timeSpan == default

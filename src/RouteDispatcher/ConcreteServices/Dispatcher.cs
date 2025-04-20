@@ -59,6 +59,7 @@ namespace RouteDispatcher.ConcreteServices
         }
         private HandlerDelegate<TResponse> GetHandlerCompiled<TResponse>(Type requestType)
         {
+            var keepCacheForEver = _configurationOptions.KeepCacheForEver;
             var cleanupTimeout = _configurationOptions.DiscardCachedHandlersTimeout;
 
             CompiledAutocleanDelegate<TResponse> compiled = _handlerCache.GetOrAdd(requestType, requestTypeKey =>
@@ -72,11 +73,13 @@ namespace RouteDispatcher.ConcreteServices
                         _handlerCache,
                         requestTypeKey,
                         compiledExpression,
-                        cleanupTimeout
+                        cleanupTimeout,
+                        keepCacheForEver
                     );
                 });
 
-            compiled.Refresh(cleanupTimeout);
+            if (!keepCacheForEver)
+                compiled.Refresh(cleanupTimeout);
 
             return compiled.Value;
         }
