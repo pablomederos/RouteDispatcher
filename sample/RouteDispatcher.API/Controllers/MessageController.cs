@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using RouteDispatcher.API.Controllers;
-using RouteDispatcher.API;
 
 namespace RouteDispatcher.API.Controllers
 {

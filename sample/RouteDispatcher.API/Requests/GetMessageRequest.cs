@@ -1,7 +1,6 @@
-using RouteDispatcher;
 using RouteDispatcher.Contracts;
 
-namespace RouteDispatcher.API
+namespace RouteDispatcher.API.Requests
 {
     public sealed class GetMessageRequest : IRequest<string>;
 }

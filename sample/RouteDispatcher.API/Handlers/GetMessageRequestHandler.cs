@@ -1,3 +1,4 @@
+using RouteDispatcher.API.Requests;
 using RouteDispatcher.Contracts;
 
 namespace RouteDispatcher.API
