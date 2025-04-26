@@ -51,9 +51,9 @@ namespace RouteDispatcher.ConcreteServices
  
              return (
                 request,
-                serviceProvider,
+                _,
                 cancellationToken
-            ) => (Task<TResponse>) methodInfo.Invoke(handler,
+            ) => (Task<TResponse>) methodInfo!.Invoke(handler,
                 new object[] { request, cancellationToken }
             );
         }
@@ -93,7 +93,7 @@ namespace RouteDispatcher.ConcreteServices
             
             var getServiceCall = Expression.Call(
                 serviceProviderParameter,
-                typeof(IServiceProvider).GetMethod("GetService"),
+                typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService))!,
                 Expression.Constant(handlerType)
             );
                 
@@ -110,7 +110,7 @@ namespace RouteDispatcher.ConcreteServices
                 
             var throwExpr = Expression.Throw(
                 Expression.New(
-                    typeof(HandlerNotFoundException).GetConstructor(new[] { typeof(string) }),
+                    typeof(HandlerNotFoundException).GetConstructor(new[] { typeof(string) })!,
                     Expression.Constant($"No handler found for request type {requestType.Name}")
                 ),
                 typeof(Task<TResponse>)
