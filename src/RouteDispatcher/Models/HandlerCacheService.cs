@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using RouteDispatcher.Contracts;
-using RouteDispatcher.Models;
 
-namespace RouteDispatcher.ConcreteServices
+namespace RouteDispatcher.Models
 {
     internal sealed class HandlerCacheService : IHandlerCache
     {

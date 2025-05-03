@@ -15,25 +15,24 @@ namespace RouteDispatcher.Models
         )
         {
             Value = value;
-            if (!keepCacheForEver)
-            { 
-                _timeout = new Timer
-                {
-                    Interval = cleanTimeout.TotalMilliseconds
-                };
-                _timeout.Elapsed += (sender, args) =>
-                {
-                    _isDisposed = true;
-                    container.TryRemove(requestType);
-                    _timeout.Dispose();
-                };
+            if (keepCacheForEver) return;
+            
+            _timeout = new Timer
+            {
+                Interval = cleanTimeout.TotalMilliseconds
+            };
+            _timeout.Elapsed += (_, _) =>
+            {
+                _isDisposed = true;
+                container.TryRemove(requestType);
+                _timeout.Dispose();
+            };
 
-                _timeout.Start();
-            }
+            _timeout.Start();
         }
 
         public HandlerDelegate<TResponse> Value { get; }
-        private readonly Timer _timeout;
+        private readonly Timer? _timeout;
         private bool _isDisposed = false;
 
         public void Refresh(TimeSpan timeSpan = default)
@@ -41,7 +40,7 @@ namespace RouteDispatcher.Models
             if(_isDisposed || _timeout == null)
                 return;
 
-            _timeout.Interval = timeSpan == default
+            _timeout.Interval = timeSpan == TimeSpan.Zero
                 ? _timeout.Interval
                 : timeSpan.TotalMilliseconds;
         }

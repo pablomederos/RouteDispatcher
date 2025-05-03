@@ -1,14 +1,9 @@
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using RouteDispatcher.Contracts;
-using Xunit;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using RouteDispatcher.Contracts;
 using RouteDispatcher.Extensions;
-using RouteDispatcher.Tests.Common.InterfaceRequests;
-using Xunit;
+using RouteDispatcher.Tests.Common.Requests;
+
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace RouteDispatcher.Tests.net8
 {

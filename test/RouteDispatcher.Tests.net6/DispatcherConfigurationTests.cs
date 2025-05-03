@@ -4,6 +4,7 @@ using RouteDispatcher.Contracts;
 using RouteDispatcher.Models;
 using System.Reflection;
 using RouteDispatcher.Tests.Common;
+using RouteDispatcher.Tests.Common.Requests;
 
 namespace RouteDispatcher.Tests.net6;
 
@@ -18,7 +19,11 @@ public class DispatcherConfigurationTests
         // Act
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(DispatcherConfigurationTests).Assembly };
+            options.Assemblies = new[]
+            {
+                typeof(CustomRequest).Assembly,
+                typeof(DispatcherConfigurationTests).Assembly
+            };
         });
 
         // Assert
@@ -36,7 +41,12 @@ public class DispatcherConfigurationTests
         // Act
         services.AddRouteDispatcher(options =>
         {
-            options.Assemblies = new[] { typeof(DispatcherConfigurationTests).Assembly, typeof(IDispatcher).Assembly };
+            options.Assemblies = new[]
+            {
+                typeof(CustomRequest).Assembly,
+                typeof(DispatcherConfigurationTests).Assembly,
+                typeof(IDispatcher).Assembly
+            };
         });
 
         // Assert
@@ -52,10 +62,10 @@ public class DispatcherConfigurationTests
         var services = new ServiceCollection();
 
         // Act
-        IServiceCollection failedAssign() => services.AddRouteDispatcher((Action<DispatcherConfiguration>)null!);
+        IServiceCollection FailedAssign() => services.AddRouteDispatcher((Action<DispatcherConfiguration>)null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>((Func<IServiceCollection>)failedAssign);
+        Assert.Throws<ArgumentNullException>((Func<IServiceCollection>)FailedAssign);
     }
 
     [Fact]

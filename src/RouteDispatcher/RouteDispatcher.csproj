@@ -5,6 +5,7 @@
     <LangVersion>10.0</LangVersion>
     <RootNamespace>RouteDispatcher</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
 
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>RouteDispatcher</PackageId>

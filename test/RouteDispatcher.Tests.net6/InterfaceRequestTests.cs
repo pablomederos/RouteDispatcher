@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RouteDispatcher.Contracts;
 using RouteDispatcher.Extensions;
-using RouteDispatcher.Tests.Common.InterfaceRequests;
+using RouteDispatcher.Tests.Common.Requests;
 
 namespace RouteDispatcher.Tests.net6
 {

@@ -5,6 +5,7 @@ using RouteDispatcher.Extensions;
 using RouteDispatcher.Tests.Common;
 using RouteDispatcher.Exceptions;
 using RouteDispatcher.Models;
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace RouteDispatcher.Tests.net6;
 
@@ -16,9 +17,8 @@ public class RouteDispatcherTests
         // Arrange
         var services = new ServiceCollection();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
-        services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new TestRequest();
 
@@ -34,9 +34,8 @@ public class RouteDispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new TestRequest();
 
@@ -49,10 +48,9 @@ public class RouteDispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddTransient<IHandlerCache, HandlerCacheService>();
         services.AddTransient<IRequestHandler<TestRequest, string>, TestRequestHandler>();
         services.AddTransient<IDispatcher, Dispatcher>(it => new Dispatcher(it, new DispatcherConfiguration()));
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new OtherRequest();
 
@@ -83,7 +81,7 @@ public class RouteDispatcherTests
         // Arrange
         var services = new ServiceCollection();
         services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new TestRequest();
 
@@ -100,12 +98,12 @@ public class RouteDispatcherTests
         // Arrange
         var services = new ServiceCollection();
         services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new TestRequest();
         using var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Cancel();
-        var cancellationToken = cancellationTokenSource.Token;
+        CancellationToken cancellationToken = cancellationTokenSource.Token;
 
         // Act
         await Assert.ThrowsAsync<OperationCanceledException>(() => dispatcher.Send(request, cancellationToken));
@@ -117,19 +115,17 @@ public class RouteDispatcherTests
         // Arrange
         var services = new ServiceCollection();
         services.AddRouteDispatcher(typeof(TestRequestHandler).Assembly);
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var request = new TestRequest();
 
         // Act
         await dispatcher.Send(request);
 
-        using (var scope = serviceProvider.CreateScope())
-        {
-            var scopedDispatcher = scope.ServiceProvider.GetRequiredService<IDispatcher>();
+        using IServiceScope scope = serviceProvider.CreateScope();
+        var scopedDispatcher = scope.ServiceProvider.GetRequiredService<IDispatcher>();
 
-            // Assert
-            await scopedDispatcher.Send(request);
-        }
+        // Assert
+        await scopedDispatcher.Send(request);
     }
 }

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher", "src\Rout
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.API", "sample\RouteDispatcher.API\RouteDispatcher.API.csproj", "{A2964836-57D7-4D41-B84B-6D6BEC22DEFF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F956-CE84-757C-A364CCF449FC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0C88DD14-F956-CE84-757C-A364CCF449FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteDispatcher.Tests.net6", "test\RouteDispatcher.Tests.net6\RouteDispatcher.Tests.net6.csproj", "{B86C306B-C411-49F7-8900-CC701CCB5EC9}"
 EndProject

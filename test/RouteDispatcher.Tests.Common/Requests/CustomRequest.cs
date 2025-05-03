@@ -1,4 +1,4 @@
-namespace RouteDispatcher.Tests.Common.InterfaceRequests
+namespace RouteDispatcher.Tests.Common.Requests
 {
     // Concrete request that implements the interface
     public class CustomRequest : ICustomOperationRequest
