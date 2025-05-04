@@ -5,6 +5,7 @@
     <LangVersion>10.0</LangVersion>
     <RootNamespace>RouteDispatcher</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
 
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>RouteDispatcher</PackageId>
@@ -20,6 +21,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="RouteDispatcher.Tests.net6" />
     <InternalsVisibleTo Include="RouteDispatcher.Tests.net8" />
+    <InternalsVisibleTo Include="RouteDispatcher.Tests.net9" />
   </ItemGroup>
 
   <ItemGroup>

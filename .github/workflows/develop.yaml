@@ -44,7 +44,7 @@ jobs:
       - name: Generate coverage report
         run: |
           reportgenerator       \
-          -reports:./test/**/TestResults/**/*.xml \
+          -reports:./tests/**/TestResults/**/*.xml \
           -targetdir:./TestResults/coverage-report \
           -reporttypes:"HtmlInline;MarkdownSummaryGithub"
 

@@ -21,7 +21,7 @@ namespace RouteDispatcher.Exceptions
         }
 
         
-        public Type HandlerType { get; }
+        public Type? HandlerType { get; }
         public override string Message => base.Message + (HandlerType != null ? $" Handler Type: {HandlerType.Name}" : string.Empty);
         
         public override string ToString()

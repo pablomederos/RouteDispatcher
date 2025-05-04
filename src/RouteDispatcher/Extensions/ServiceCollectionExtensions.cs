@@ -1,12 +1,12 @@
 #nullable enable
 
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using System.Linq;
-using RouteDispatcher.Contracts;
-using RouteDispatcher.ConcreteServices;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using RouteDispatcher.ConcreteServices;
+using RouteDispatcher.Contracts;
 using RouteDispatcher.Models;
 
 namespace RouteDispatcher.Extensions
@@ -20,8 +20,6 @@ namespace RouteDispatcher.Extensions
 
             var configurationOptions = new DispatcherConfiguration();
             options(configurationOptions);
-
-
 
             configurationOptions.Assemblies = configurationOptions
                 .Assemblies
@@ -72,12 +70,12 @@ namespace RouteDispatcher.Extensions
                     .SelectMany(a => a.GetTypes())
                     .GetHandlerTypes();
 
-            foreach (var handlerType in requestHandlerTypes)
+            foreach (Type handlerType in requestHandlerTypes)
             {
-                var interfaceType = handlerType
+                Type interfaceType = handlerType
                     .GetInterfaces()
                     .First(i => i.IsGenericType
-                        && i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)
+                        && IsHandlerType(i)
                     );
                 services.AddTransient(interfaceType, handlerType);
             }
@@ -95,7 +93,16 @@ namespace RouteDispatcher.Extensions
 
         private static Type[] GetHandlerTypes(this IEnumerable<Type> types)
             => types
-                .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>)))
+                .Where(t => t.IsClass 
+                    && t.GetInterfaces()
+                        .Any(i => i.IsGenericType 
+                              && IsHandlerType(i)
+                        )
+                )
                 .ToArray();
+        
+        private static bool IsHandlerType(Type i)
+            => i.GetGenericTypeDefinition() == Dispatcher.InvocationHandlerType
+               || i.GetGenericTypeDefinition() == Dispatcher.MessageHandlerType;
     }
 }
