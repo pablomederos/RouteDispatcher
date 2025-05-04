@@ -16,5 +16,11 @@ namespace RouteDispatcher.API
         {
             return await _dispatcher.Send(new GetMessageRequest());
         }
+
+        public async Task LogAction(string actionDescription)
+        {
+            // Usa la implementación de IRequest (sin retorno específico)
+            await _dispatcher.Send(new LogActionRequest(actionDescription));
+        }
     }
 }

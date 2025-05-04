@@ -14,4 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\RouteDispatcher\RouteDispatcher.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MessageHandlers\" />
+  </ItemGroup>
 </Project>
