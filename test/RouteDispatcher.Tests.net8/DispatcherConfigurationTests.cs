@@ -51,10 +51,10 @@ public class DispatcherConfigurationTests
         var services = new ServiceCollection();
 
         // Act
-        IServiceCollection failedAssign() => services.AddRouteDispatcher((Action<DispatcherConfiguration>)null!);
+        IServiceCollection FailedAssign() => services.AddRouteDispatcher((Action<DispatcherConfiguration>)null!);
 
         // Assert
-        Assert.Throws<ArgumentNullException>((Func<IServiceCollection>)failedAssign);
+        Assert.Throws<ArgumentNullException>((Func<IServiceCollection>)FailedAssign);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class DispatcherConfigurationTests
             options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1);
         });
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var handlerCache = serviceProvider.GetRequiredService<IHandlerCache>();
         var request = new TestRequest();
@@ -175,10 +175,10 @@ public class DispatcherConfigurationTests
         {
             options.Assemblies = [ typeof(TestRequest).Assembly ];
             options.UseHandlersCache = true;
-            options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1);
+            options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1.1);
         });
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var handlerCache = serviceProvider.GetRequiredService<IHandlerCache>();
         var request = new TestRequest();

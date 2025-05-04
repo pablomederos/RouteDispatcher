@@ -128,7 +128,7 @@ public sealed partial class Dispatcher
             cancellationTokenParameter
         );
                 
-        var throwExpr = Expression.Throw(
+        UnaryExpression throwExpr = Expression.Throw(
             Expression.New(
                 typeof(HandlerNotFoundException).GetConstructor(new[] { typeof(string) })!,
                 Expression.Constant($"No handler found for request type {requestType.Name}")
@@ -136,13 +136,13 @@ public sealed partial class Dispatcher
             typeof(Task<TResponse>)
         );
                 
-        var conditionalExpr = Expression.Condition(
+        ConditionalExpression conditionalExpr = Expression.Condition(
             Expression.Equal(handlerVariable, Expression.Constant(null)),
             throwExpr,
             handleCall
         );
                 
-        var block = Expression.Block(
+        BlockExpression block = Expression.Block(
             new[] { handlerVariable },
             Expression.Assign(handlerVariable, Expression.Convert(getServiceCall, handlerType)),
             conditionalExpr);

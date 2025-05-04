@@ -28,6 +28,27 @@ public class RouteDispatcherTests
         // Assert
         Assert.Equal("Test Response", response);
     }
+    
+    [Fact]
+    public async Task Send_ValidRequest_CachedHandlerType_ReturnsResponse()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        services.AddRouteDispatcher(opts =>
+        {
+            opts.Assemblies = new[] { typeof(TestRequest).Assembly };
+            opts.UseHandlersCache = true;
+        });
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var request = new TestRequest();
+
+        // Act
+        var response = await dispatcher.Send(request, CancellationToken.None);
+
+        // Assert
+        Assert.Equal("Test Response", response);
+    }
 
     [Fact]
     public async Task Send_NoHandler_ThrowsException()
