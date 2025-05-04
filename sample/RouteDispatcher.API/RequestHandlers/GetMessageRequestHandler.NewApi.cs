@@ -1,11 +1,9 @@
 using RouteDispatcher.API.Requests;
 using RouteDispatcher.Contracts;
 
-namespace RouteDispatcher.API.Handlers
+namespace RouteDispatcher.API.RequestHandlers
 {
-#pragma warning disable CS0618 // Type or member is obsolete
-    public class GetMessageRequestHandler : IRequestHandler<GetMessageRequest, string>
-#pragma warning restore CS0618 // Type or member is obsolete
+    public class GetMessageRequestHandler : IInvocationHandler<GetMessageRequest, string>
     {
         public Task<string> Handle(GetMessageRequest request, CancellationToken cancellationToken)
         {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace RouteDispatcher.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("Request/[controller]")]
     public class MessageController : ControllerBase
     {
         private readonly MessageService _messageService;

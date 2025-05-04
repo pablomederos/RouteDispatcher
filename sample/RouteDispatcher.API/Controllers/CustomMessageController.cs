@@ -5,7 +5,7 @@ using RouteDispatcher.Contracts;
 namespace RouteDispatcher.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("Request/[controller]")]
     public class CustomMessageController : ControllerBase
     {
         private readonly IDispatcher _dispatcher;
