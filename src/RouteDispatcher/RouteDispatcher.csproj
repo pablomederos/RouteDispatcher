@@ -21,6 +21,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="RouteDispatcher.Tests.net6" />
     <InternalsVisibleTo Include="RouteDispatcher.Tests.net8" />
+    <InternalsVisibleTo Include="RouteDispatcher.Tests.net9" />
   </ItemGroup>
 
   <ItemGroup>

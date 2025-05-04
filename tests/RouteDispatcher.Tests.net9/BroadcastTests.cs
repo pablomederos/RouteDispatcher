@@ -4,7 +4,7 @@ using RouteDispatcher.Extensions;
 using RouteDispatcher.Tests.Common.Handlers;
 using RouteDispatcher.Tests.Common.Messages;
 
-namespace RouteDispatcher.Tests.net6
+namespace RouteDispatcher.Tests.net9
 {
     public class BroadcastTests
     {
@@ -81,7 +81,7 @@ namespace RouteDispatcher.Tests.net6
         
             // Create a pre-cancelled token
             using var cts = new CancellationTokenSource();
-            cts.Cancel();
+            await cts.CancelAsync();
         
             // Act & Assert
             await Assert.ThrowsAsync<OperationCanceledException>(() => 
@@ -102,7 +102,7 @@ namespace RouteDispatcher.Tests.net6
             services.AddRouteDispatcher(opts =>
             {
                 opts.IgnoreBroadcastFailuresUntilTheEnd = true;
-                opts.Assemblies = new [] { typeof(TestExceptionBroadcastMessage).Assembly };
+                opts.Assemblies = [ typeof(TestExceptionBroadcastMessage).Assembly ];
             });
 
             ServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -125,7 +125,7 @@ namespace RouteDispatcher.Tests.net6
             services.AddRouteDispatcher(opts =>
             {
                 opts.IgnoreBroadcastFailuresUntilTheEnd = false;
-                opts.Assemblies = new [] { typeof(TestExceptionBroadcastMessage).Assembly };
+                opts.Assemblies = [ typeof(TestExceptionBroadcastMessage).Assembly ];
             });
             
             ServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -136,7 +136,7 @@ namespace RouteDispatcher.Tests.net6
             var exception = await Assert.ThrowsAsync<AggregateException>(() => 
                 dispatcher.Broadcast(message, CancellationToken.None));
             
-            Assert.Equal(1, exception.InnerExceptions.Count);
+            Assert.Single(exception.InnerExceptions);
         }
         
         [Fact]
