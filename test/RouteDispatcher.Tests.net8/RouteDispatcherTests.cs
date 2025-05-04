@@ -5,6 +5,8 @@ using RouteDispatcher.Extensions;
 using RouteDispatcher.Tests.Common;
 using RouteDispatcher.Exceptions;
 using RouteDispatcher.Models;
+using RouteDispatcher.Tests.Common.Handlers;
+
 #pragma warning disable CS0618 // Type or member is obsolete
 
 namespace RouteDispatcher.Tests.net8;

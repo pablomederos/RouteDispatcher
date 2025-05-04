@@ -5,6 +5,7 @@ using RouteDispatcher.Extensions;
 using RouteDispatcher.Tests.Common;
 using RouteDispatcher.Exceptions;
 using RouteDispatcher.Models;
+using RouteDispatcher.Tests.Common.Handlers;
 
 namespace RouteDispatcher.Tests.net8;
 

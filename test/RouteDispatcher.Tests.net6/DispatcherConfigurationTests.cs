@@ -103,6 +103,22 @@ public class DispatcherConfigurationTests
     }
 
     [Fact]
+    public void AddRouteDispatcher_WithNegativeTimeout_ThrowsException()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            services.AddRouteDispatcher(options =>
+            {
+                options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(-1);
+            });
+        });
+    }
+
+    [Fact]
     public async Task AddRouteDispatcher_UseCacheTrue_CacheIsUsed()
     {
         // Arrange

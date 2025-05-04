@@ -11,6 +11,9 @@ namespace RouteDispatcher.ConcreteServices;
 
 public sealed partial class Dispatcher
 {
+    public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+        where TRequest : IRequest
+        => Send<Empty>(request, cancellationToken);
 
     public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {

@@ -22,7 +22,7 @@ namespace RouteDispatcher.Tests.net6
             var request = new CustomRequest { Content = message };
             
             // Act
-            var result = await dispatcher.Send(request);
+            string result = await dispatcher.Send(request);
             
             // Assert
             Assert.NotNull(result);

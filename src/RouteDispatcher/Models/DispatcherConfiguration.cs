@@ -17,7 +17,7 @@ namespace RouteDispatcher.Models
             get => _discardCachedHandlersTimeout;
             set
             {
-                if (value == TimeSpan.Zero)
+                if (value == TimeSpan.Zero || value.TotalMilliseconds < 0)
                     throw new ArgumentOutOfRangeException(nameof(DiscardCachedHandlersTimeout), "Timeout cannot be zero");
 
                 _discardCachedHandlersTimeout = value;
