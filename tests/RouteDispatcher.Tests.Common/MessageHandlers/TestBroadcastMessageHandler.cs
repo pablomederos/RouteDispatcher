@@ -1,7 +1,7 @@
 using RouteDispatcher.Contracts;
 using RouteDispatcher.Tests.Common.Messages;
 
-namespace RouteDispatcher.Tests.Common.Handlers
+namespace RouteDispatcher.Tests.Common.MessageHandlers
 {
     /// <summary>
     /// Test message handler for broadcast tests

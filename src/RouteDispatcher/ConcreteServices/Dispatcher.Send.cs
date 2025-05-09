@@ -1,5 +1,4 @@
 using System;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,13 +20,33 @@ public sealed partial class Dispatcher
 
         Type requestType = request.GetType();
 
-        HandlerDelegate<TResponse> handler = _configurationOptions.UseHandlersCache
-            ? GetHandlerCompiled<TResponse>(requestType)
-            : GetHandler<TResponse>(requestType);
+        if (!_configurationOptions.UseHandlersCache)
+            return GetHandler<TResponse>(requestType)
+                (request, cancellationToken);
+        
+        CachedHandlerItem cached = GetCachedHandler<TResponse>(requestType);
+            
+        bool keepCacheForEver = _configurationOptions.KeepCacheForEver;
+        TimeSpan cleanupTimeout = _configurationOptions.DiscardCachedHandlersTimeout;
 
-        cancellationToken.ThrowIfCancellationRequested();
+        if (!keepCacheForEver)
+            cached.Refresh(cleanupTimeout);
 
-        return handler(request, _serviceProvider, cancellationToken);
+        object handler = _serviceProvider
+                             .GetService(cached.HandlerType)
+                         ?? throw new HandlerNotFoundException("No handler found for request type", requestType);
+
+        return (Task<TResponse>) cached
+            .HandlerMethod
+            .Invoke(
+                handler,
+                new object[]
+                {
+                    request, 
+                    cancellationToken
+                }
+            )!;
+
     }
 
     private HandlerDelegate<TResponse> GetHandler<TResponse>(Type requestType)
@@ -58,106 +77,39 @@ public sealed partial class Dispatcher
  
         return (
             request,
-            _,
             cancellationToken
-        ) => (Task<TResponse>) methodInfo.Invoke(
-            handler!,
-            new object[]
-            {
-                request, 
-                cancellationToken
-            }
-        )!;
+        ) => (Task<TResponse>) methodInfo
+            .Invoke(
+                handler!,
+                new object[]
+                {
+                    request, 
+                    cancellationToken
+                }
+            )!;
     }
-    private HandlerDelegate<TResponse> GetHandlerCompiled<TResponse>(Type requestType)
-    {
-        if(!_configurationOptions.UseHandlersCache)
-            throw new InvalidOperationException("Handlers cache is disabled.");
-        
+    private CachedHandlerItem GetCachedHandler<TResponse>(Type requestType)
+    {   
         bool keepCacheForEver = _configurationOptions.KeepCacheForEver;
         TimeSpan cleanupTimeout = _configurationOptions.DiscardCachedHandlersTimeout;
 
-        CompiledAutocleanDelegate<TResponse> compiled = _handlerCache
-            !.GetOrAdd(requestType, requestTypeKey =>
+        return _handlerCache
+            .GetOrAdd(requestType, requestTypeKey =>
             {
                 Type handlerType = InvocationHandlerType
                     .MakeGenericType(requestTypeKey, typeof(TResponse));
 
-                var compiledExpression = CompileHandlerExpression<TResponse>(requestTypeKey, handlerType);
-
-                return new CompiledAutocleanDelegate<TResponse>(
+                MethodInfo handlerMethod = handlerType
+                    .GetMethod(HandlerMethodName)!;
+                
+                return new CachedHandlerItem(
                     _handlerCache,
-                    requestTypeKey,
-                    compiledExpression,
+                    requestType,
+                    handlerType,
+                    handlerMethod,
                     cleanupTimeout,
                     keepCacheForEver
                 );
             });
-
-        if (!keepCacheForEver)
-            compiled.Refresh(cleanupTimeout);
-
-        return compiled.Value;
-    }
-        
-    private static HandlerDelegate<TResponse> CompileHandlerExpression<TResponse>(Type requestType, Type handlerType)
-    {
-            
-        ParameterExpression requestParameter = Expression
-            .Parameter(typeof(IRequest<TResponse>), "request");
-        ParameterExpression serviceProviderParameter = Expression
-            .Parameter(typeof(IServiceProvider), "serviceProvider");
-        ParameterExpression cancellationTokenParameter = Expression
-            .Parameter(typeof(CancellationToken), "cancellationToken");
-            
-        MethodCallExpression getServiceCall = Expression.Call(
-            serviceProviderParameter,
-            typeof(IServiceProvider).GetMethod(nameof(IServiceProvider.GetService))!,
-            Expression.Constant(handlerType)
-        );
-                
-        ParameterExpression handlerVariable = Expression.Variable(handlerType, "handler");
-        UnaryExpression convertedRequest = Expression.Convert(requestParameter, requestType);
-            
-        MethodInfo handleMethod = handlerType
-            .GetMethod(
-                HandlerMethodName
-            ) ?? throw new HandlerNotFoundException($"No handler found for request type {requestType.Name}");
-            
-        MethodCallExpression handleCall = Expression.Call(
-            Expression.Convert(handlerVariable, handlerType),
-            handleMethod,
-            convertedRequest,
-            cancellationTokenParameter
-        );
-                
-        UnaryExpression throwExpr = Expression.Throw(
-            Expression.New(
-                typeof(HandlerNotFoundException).GetConstructor(new[] { typeof(string) })!,
-                Expression.Constant($"No handler found for request type {requestType.Name}")
-            ),
-            typeof(Task<TResponse>)
-        );
-                
-        ConditionalExpression conditionalExpr = Expression.Condition(
-            Expression.Equal(handlerVariable, Expression.Constant(null)),
-            throwExpr,
-            handleCall
-        );
-                
-        BlockExpression block = Expression.Block(
-            new[] { handlerVariable },
-            Expression.Assign(handlerVariable, Expression.Convert(getServiceCall, handlerType)),
-            conditionalExpr);
-
-        var functionExpression = Expression
-            .Lambda<HandlerDelegate<TResponse>>(
-                block,
-                requestParameter,
-                serviceProviderParameter,
-                cancellationTokenParameter
-            );
-                
-        return functionExpression.Compile();
     }
 }

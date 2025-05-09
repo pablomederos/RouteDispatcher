@@ -9,7 +9,7 @@ public sealed partial class Dispatcher : IMediator, IDispatcher
 #pragma warning restore CS0618 // Type or member is obsolete
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IHandlerCache? _handlerCache;
+    private readonly IHandlerCache _handlerCache = null!;
     private readonly DispatcherConfiguration _configurationOptions;
 
     public Dispatcher(IServiceProvider serviceProvider, DispatcherConfiguration configurationOptions)

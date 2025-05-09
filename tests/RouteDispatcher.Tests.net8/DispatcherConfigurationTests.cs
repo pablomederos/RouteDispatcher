@@ -103,7 +103,7 @@ public class DispatcherConfigurationTests
             options.UseHandlersCache = true;
         });
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var handlerCache = serviceProvider.GetRequiredService<IHandlerCache>();
         var request = new TestRequest();
@@ -116,7 +116,7 @@ public class DispatcherConfigurationTests
     }
 
     [Fact]
-    public async Task AddRouteDispatcher_UseCacheFalse_CacheIsNotUsed()
+    public void AddRouteDispatcher_UseCacheFalse_CacheIsNotUsed()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -127,16 +127,13 @@ public class DispatcherConfigurationTests
             options.UseHandlersCache = false;
         });
 
-        var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
-        var handlerCache = serviceProvider.GetRequiredService<IHandlerCache>();
-        var request = new TestRequest();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         // Act
-        await dispatcher.Send(request);
+        var handlerCache = serviceProvider.GetService<IHandlerCache>();
 
         // Assert
-        Assert.True(handlerCache.IsEmpty());
+        Assert.Null(handlerCache);
     }
 
     [Fact]
