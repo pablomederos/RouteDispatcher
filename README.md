@@ -4,6 +4,8 @@
 [![Production Workflow](https://github.com/pablomederos/RouteDispatcher/actions/workflows/main.yaml/badge.svg)](https://github.com/pablomederos/RouteDispatcher/actions/workflows/main.yaml)    
 [![Develop Test Workflow](https://github.com/pablomederos/RouteDispatcher/actions/workflows/develop.yaml/badge.svg)](https://github.com/pablomederos/RouteDispatcher/actions/workflows/develop.yaml)
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/pablomederos/RouteDispatcher)
+
 A simple mediator implementation for .NET
 
 ## Description
@@ -150,7 +152,7 @@ It is **required** to use the `AddRouteDispatcher` extension method to register 
      typeof(YetAnotherAssemblyWithRequestHandlers).Assembly
  ); 
 ```
-
+## Recomended ⚠️
 You can also configure the dispatcher with caching using the `AddRouteDispatcher` extension method with an `Action<DispatcherConfiguration>`. The cache is used to avoid the use of reflection when obtaining the handler type again and again, and reuse a type previously discovered:
 
 ```csharp

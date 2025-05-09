@@ -15,11 +15,11 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "RouteDispatcher API",
         Version = "v1",
-        Description = "API para la gestión de Route Dispatcher",
+        Description = "API para las pruebas de Route Dispatcher",
         Contact = new OpenApiContact
         {
             Name = "Soporte",
-            Email = "soporte@routedispatcher.com"
+            Email = "contacto@pablomederos.dev"
         }
     });
 });
