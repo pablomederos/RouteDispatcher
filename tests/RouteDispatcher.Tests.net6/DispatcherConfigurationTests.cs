@@ -205,7 +205,7 @@ public class DispatcherConfigurationTests
             options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1);
         });
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var handlerCache = serviceProvider.GetRequiredService<IHandlerCache>();
         var request = new TestRequest();
@@ -214,7 +214,7 @@ public class DispatcherConfigurationTests
         await dispatcher.Send(request);
         await Task.Delay(TimeSpan.FromMilliseconds(500));
         await dispatcher.Send(request);
-        await Task.Delay(TimeSpan.FromSeconds(1));
+        await Task.Delay(TimeSpan.FromSeconds(2));
 
         // Assert
         Assert.False(handlerCache.IsEmpty());
@@ -263,7 +263,7 @@ public class DispatcherConfigurationTests
             options.DiscardCachedHandlersTimeout = TimeSpan.FromSeconds(1);
         });
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
         var handlerCache = serviceProvider.GetRequiredService<IHandlerCache>();
         var request = new TestRequest();

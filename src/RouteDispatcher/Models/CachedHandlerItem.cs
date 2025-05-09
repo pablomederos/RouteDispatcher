@@ -4,17 +4,17 @@ using RouteDispatcher.Contracts;
 
 namespace RouteDispatcher.Models
 {
-    public sealed record CompiledAutocleanDelegate<TResponse>
+    internal sealed class CachedHandlerItem
     {
-        public CompiledAutocleanDelegate(
+        public CachedHandlerItem(
             IHandlerCache container,
             Type requestType,
-            HandlerDelegate<TResponse> value,
+            Type handlerType,
             TimeSpan cleanTimeout,
             bool keepCacheForEver
         )
         {
-            Value = value;
+            HandlerType = handlerType;
             if (keepCacheForEver) return;
             
             _timeout = new Timer
@@ -31,9 +31,9 @@ namespace RouteDispatcher.Models
             _timeout.Start();
         }
 
-        public HandlerDelegate<TResponse> Value { get; }
+        public Type HandlerType { get; }
         private readonly Timer? _timeout;
-        private bool _isDisposed = false;
+        private bool _isDisposed;
 
         public void Refresh(TimeSpan timeSpan = default)
         {

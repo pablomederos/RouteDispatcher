@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +37,7 @@ namespace RouteDispatcher.Extensions
 
         public static IServiceCollection AddRouteDispatcher(this IServiceCollection services, params Assembly[] assemblies)
         {
-            Assembly[] targetAssembies = assemblies.Length == 0
+            Assembly[] targetAssemblies = assemblies.Length == 0
                 ? new[]
                     {
                         Assembly
@@ -47,7 +45,7 @@ namespace RouteDispatcher.Extensions
                     }
                 : assemblies;
                 
-            ConfigureServices(services, targetAssembies);
+            ConfigureServices(services, targetAssemblies);
 
             return services;
         }
@@ -70,6 +68,8 @@ namespace RouteDispatcher.Extensions
                     .SelectMany(a => a.GetTypes())
                     .GetHandlerTypes();
 
+            Dictionary<Type, CachedTypeConfiguration> cachedTypes = new();
+
             foreach (Type handlerType in requestHandlerTypes)
             {
                 Type interfaceType = handlerType
@@ -77,15 +77,39 @@ namespace RouteDispatcher.Extensions
                     .First(i => i.IsGenericType
                         && IsHandlerType(i)
                     );
+
+                if (configurationOptions.UseHandlersCache)
+                {
+                    Type requestType = interfaceType
+                        .GetGenericArguments()
+                        .First();
+
+                    if(!cachedTypes.TryGetValue(requestType, out CachedTypeConfiguration? _))
+                        cachedTypes.Add(requestType, new CachedTypeConfiguration()
+                        {
+                            RequestType = requestType,
+                            HandlerType = interfaceType,
+                            CleanTimeout = configurationOptions.DiscardCachedHandlersTimeout,
+                            KeepCacheForEver = configurationOptions.KeepCacheForEver 
+                        });
+                }
                 services.AddTransient(interfaceType, handlerType);
             }
 
-            services.AddSingleton<IHandlerCache, HandlerCacheService>();
+            if(configurationOptions.UseHandlersCache)
+                services.AddSingleton<IHandlerCache, HandlerCacheService>(
+                    BuildCachedTypes(cachedTypes)
+                );
+            
+            services.AddScoped<IDispatcher, Dispatcher>(BuildDispatcher(configurationOptions));
+            
 #pragma warning disable CS0618 // Type or member is obsolete
             services.AddScoped<IMediator, Dispatcher>(BuildDispatcher(configurationOptions));
 #pragma warning restore CS0618 // Type or member is obsolete
-            services.AddScoped<IDispatcher, Dispatcher>(BuildDispatcher(configurationOptions));
         }
+
+        private static Func<IServiceProvider, HandlerCacheService> BuildCachedTypes(Dictionary<Type, CachedTypeConfiguration> cachedTypes)
+            => _ =>  new HandlerCacheService(cachedTypes); 
 
         private static Func<IServiceProvider, Dispatcher> BuildDispatcher(DispatcherConfiguration configurationOptions)
             => serviceProvider
