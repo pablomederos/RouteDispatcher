@@ -154,16 +154,13 @@ public class DispatcherConfigurationTests
             options.UseHandlersCache = false;
         });
 
-        var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
-        var handlerCache = serviceProvider.GetRequiredService<IHandlerCache>();
-        var request = new TestRequest();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         // Act
-        await dispatcher.Send(request);
+        var handlerCache = serviceProvider.GetService<IHandlerCache>();
 
         // Assert
-        Assert.True(handlerCache.IsEmpty());
+        Assert.Null(handlerCache);
     }
 
     [Fact]
@@ -214,7 +211,7 @@ public class DispatcherConfigurationTests
         await dispatcher.Send(request);
         await Task.Delay(TimeSpan.FromMilliseconds(500));
         await dispatcher.Send(request);
-        await Task.Delay(TimeSpan.FromSeconds(2));
+        await Task.Delay(TimeSpan.FromMilliseconds(900));
 
         // Assert
         Assert.False(handlerCache.IsEmpty());

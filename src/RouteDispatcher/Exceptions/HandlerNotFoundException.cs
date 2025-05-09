@@ -2,7 +2,7 @@ using System;
 
 namespace RouteDispatcher.Exceptions
 {
-    public class HandlerNotFoundException : Exception
+    public sealed class HandlerNotFoundException : Exception
     {
         public HandlerNotFoundException(string message) : base(message)
         {

@@ -78,14 +78,20 @@ namespace RouteDispatcher.Extensions
                         && IsHandlerType(i)
                     );
 
-                if (configurationOptions.UseHandlersCache)
+                if (
+                    configurationOptions is
+                    {
+                        UseHandlersCache: true, 
+                        KeepCacheForEver: true
+                    } 
+                )
                 {
                     Type requestType = interfaceType
                         .GetGenericArguments()
                         .First();
 
                     if(!cachedTypes.TryGetValue(requestType, out CachedTypeConfiguration? _))
-                        cachedTypes.Add(requestType, new CachedTypeConfiguration()
+                        cachedTypes.Add(requestType, new CachedTypeConfiguration
                         {
                             RequestType = requestType,
                             HandlerType = interfaceType,

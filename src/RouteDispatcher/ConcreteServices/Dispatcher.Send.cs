@@ -1,5 +1,4 @@
 using System;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,15 +21,32 @@ public sealed partial class Dispatcher
         Type requestType = request.GetType();
 
         if (!_configurationOptions.UseHandlersCache)
-        {
-            HandlerDelegate<TResponse> handler = GetHandler<TResponse>(requestType);
-            return handler(request, _serviceProvider, cancellationToken);
-        }
+            return GetHandler<TResponse>(requestType)
+                (request, cancellationToken);
+        
+        CachedHandlerItem cached = GetCachedHandler<TResponse>(requestType);
+            
+        bool keepCacheForEver = _configurationOptions.KeepCacheForEver;
+        TimeSpan cleanupTimeout = _configurationOptions.DiscardCachedHandlersTimeout;
 
-        HandlerDelegate<TResponse> cachedHandlerType = GetCachedHandler<TResponse>(requestType) 
-                                                 ?? throw new HandlerNotFoundException("No handler found for request type", requestType);
+        if (!keepCacheForEver)
+            cached.Refresh(cleanupTimeout);
 
-        return cachedHandlerType(request, _serviceProvider, cancellationToken);
+        object handler = _serviceProvider
+                             .GetService(cached.HandlerType)
+                         ?? throw new HandlerNotFoundException("No handler found for request type", requestType);
+
+        return (Task<TResponse>) cached
+            .HandlerMethod
+            .Invoke(
+                handler,
+                new object[]
+                {
+                    request, 
+                    cancellationToken
+                }
+            )!;
+
     }
 
     private HandlerDelegate<TResponse> GetHandler<TResponse>(Type requestType)
@@ -61,59 +77,39 @@ public sealed partial class Dispatcher
  
         return (
             request,
-            _,
             cancellationToken
-        ) => (Task<TResponse>) methodInfo.Invoke(
-            handler!,
-            new object[]
-            {
-                request, 
-                cancellationToken
-            }
-        )!;
+        ) => (Task<TResponse>) methodInfo
+            .Invoke(
+                handler!,
+                new object[]
+                {
+                    request, 
+                    cancellationToken
+                }
+            )!;
     }
-    private HandlerDelegate<TResponse> GetCachedHandler<TResponse>(Type requestType)
-    {
-        if(!_configurationOptions.UseHandlersCache)
-            throw new InvalidOperationException("Handlers cache is disabled.");
-        
+    private CachedHandlerItem GetCachedHandler<TResponse>(Type requestType)
+    {   
         bool keepCacheForEver = _configurationOptions.KeepCacheForEver;
         TimeSpan cleanupTimeout = _configurationOptions.DiscardCachedHandlersTimeout;
 
-        CachedHandlerItem cached = _handlerCache
-            !.GetOrAdd(requestType, requestTypeKey =>
+        return _handlerCache
+            .GetOrAdd(requestType, requestTypeKey =>
             {
                 Type handlerType = InvocationHandlerType
                     .MakeGenericType(requestTypeKey, typeof(TResponse));
+
+                MethodInfo handlerMethod = handlerType
+                    .GetMethod(HandlerMethodName)!;
                 
                 return new CachedHandlerItem(
-                    _handlerCache!,
+                    _handlerCache,
                     requestType,
                     handlerType,
+                    handlerMethod,
                     cleanupTimeout,
                     keepCacheForEver
                 );
             });
-
-        if (!keepCacheForEver)
-            cached.Refresh(cleanupTimeout);
-
-        object handler = _serviceProvider
-            .GetService(cached.HandlerType)
-            ?? throw new HandlerNotFoundException("No handler found for request type", requestType);
-
-        MethodInfo method = cached
-            .HandlerType
-            .GetMethod(HandlerMethodName)!;
-
-        return (request, _, cancellationToken) 
-            =>  (Task<TResponse>) method.Invoke(
-            handler,
-            new object[]
-            {
-                request, 
-                cancellationToken
-            }
-        )!;
     }
 }

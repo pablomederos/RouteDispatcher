@@ -14,7 +14,6 @@ namespace RouteDispatcher.Contracts
 
     public delegate Task<TResponse> HandlerDelegate<TResponse>(
         IRequest<TResponse> request,
-        IServiceProvider serviceProvider,
         CancellationToken cancellationToken
     );
 }

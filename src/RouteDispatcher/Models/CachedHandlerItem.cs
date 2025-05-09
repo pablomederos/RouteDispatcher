@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Timers;
 using RouteDispatcher.Contracts;
 
@@ -10,11 +11,13 @@ namespace RouteDispatcher.Models
             IHandlerCache container,
             Type requestType,
             Type handlerType,
+            MethodInfo handlerMethod,
             TimeSpan cleanTimeout,
             bool keepCacheForEver
         )
         {
             HandlerType = handlerType;
+            HandlerMethod = handlerMethod;
             if (keepCacheForEver) return;
             
             _timeout = new Timer
@@ -23,15 +26,16 @@ namespace RouteDispatcher.Models
             };
             _timeout.Elapsed += (_, _) =>
             {
-                _isDisposed = true;
                 container.TryRemove(requestType);
                 _timeout.Dispose();
+                _isDisposed = true;
             };
 
             _timeout.Start();
         }
 
         public Type HandlerType { get; }
+        public MethodInfo HandlerMethod { get; }
         private readonly Timer? _timeout;
         private bool _isDisposed;
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using RouteDispatcher.Contracts;
+using static RouteDispatcher.ConcreteServices.Dispatcher;
 
 namespace RouteDispatcher.Models
 {
@@ -20,6 +21,7 @@ namespace RouteDispatcher.Models
                         container: this,
                         requestType: cachedType.Value.RequestType,
                         handlerType: cachedType.Value.HandlerType,
+                        handlerMethod: cachedType.Value.HandlerType.GetMethod(HandlerMethodName)!,
                         cleanTimeout: cachedType.Value.CleanTimeout,
                         keepCacheForEver: cachedType.Value.KeepCacheForEver
                     );
