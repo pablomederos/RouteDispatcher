@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using RouteDispatcher.Models;
@@ -14,6 +15,11 @@ namespace RouteDispatcher.Contracts
 
     public delegate Task<TResponse> HandlerDelegate<TResponse>(
         IRequest<TResponse> request,
+        CancellationToken cancellationToken
+    );
+    
+    public delegate IAsyncEnumerable<TResponse> StreamHandlerDelegate<TResponse>(
+        IStreamRequest<TResponse> request,
         CancellationToken cancellationToken
     );
 }

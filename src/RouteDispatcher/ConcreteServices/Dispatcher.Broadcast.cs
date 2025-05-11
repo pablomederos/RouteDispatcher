@@ -10,7 +10,7 @@ namespace RouteDispatcher.ConcreteServices
 {
     public sealed partial class Dispatcher
     {
-        public Task Broadcast<TMessage>(TMessage request, CancellationToken cancellationToken = default)
+        public async Task Broadcast<TMessage>(TMessage request, CancellationToken cancellationToken = default)
             where TMessage : class
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -47,7 +47,7 @@ namespace RouteDispatcher.ConcreteServices
                         ) as Task 
                         ?? throw new InvalidOperationException($"Message handler method [{MessageMethodName}] cannot return null.");
                     
-                    task.Wait(cancellationToken);
+                    await task.ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -58,9 +58,8 @@ namespace RouteDispatcher.ConcreteServices
                 }
             }
             
-            return exceptions.Count > 0 
-                ? Task.FromException(new AggregateException(exceptions)) 
-                : Task.CompletedTask;
+            if(exceptions.Count > 0) 
+                throw new AggregateException(exceptions);
         }
     }
 }

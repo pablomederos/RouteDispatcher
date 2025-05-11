@@ -2,7 +2,7 @@ using RouteDispatcher.Extensions;
 using RouteDispatcher.API;
 using Microsoft.OpenApi.Models;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -15,11 +15,11 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "RouteDispatcher API",
         Version = "v1",
-        Description = "API para la gestión de Route Dispatcher",
+        Description = "API para las pruebas de Route Dispatcher",
         Contact = new OpenApiContact
         {
             Name = "Soporte",
-            Email = "soporte@routedispatcher.com"
+            Email = "contacto@pablomederos.dev"
         }
     });
 });
@@ -28,7 +28,7 @@ builder.Services.AddRouteDispatcher();
 
 builder.Services.AddTransient<MessageService>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Enable Swagger and Swagger UI
 app.UseSwagger();
@@ -43,7 +43,5 @@ app.MapControllerRoute(
     pattern: "{controller=Message}/{action=Get}");
 
 app.MapControllers();
-
-app.Run();
 
 app.Run();

@@ -143,7 +143,7 @@ public class DispatcherConfigurationTests
     }
 
     [Fact]
-    public async Task AddRouteDispatcher_UseCacheFalse_CacheIsNotUsed()
+    public void AddRouteDispatcher_UseCacheFalse_CacheIsNotUsed()
     {
         // Arrange
         var services = new ServiceCollection();

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RouteDispatcher.ConcreteServices;
 using RouteDispatcher.Contracts;
 using RouteDispatcher.Models;
+using static RouteDispatcher.ConcreteServices.Dispatcher;
 
 namespace RouteDispatcher.Extensions
 {
@@ -123,16 +124,24 @@ namespace RouteDispatcher.Extensions
 
         private static Type[] GetHandlerTypes(this IEnumerable<Type> types)
             => types
-                .Where(t => t.IsClass 
-                    && t.GetInterfaces()
-                        .Any(i => i.IsGenericType 
-                              && IsHandlerType(i)
+                .Where(type => type.IsClass 
+                    && type.GetInterfaces()
+                        .Any(interfaceType => interfaceType.IsGenericType 
+                              && IsHandlerType(interfaceType)
                         )
                 )
                 .ToArray();
-        
-        private static bool IsHandlerType(Type i)
-            => i.GetGenericTypeDefinition() == Dispatcher.InvocationHandlerType
-               || i.GetGenericTypeDefinition() == Dispatcher.MessageHandlerType;
+
+        private static bool IsHandlerType(Type type)
+        {
+            if(type is not { IsConstructedGenericType: true })
+                return false;
+            Type genericDefinition = type.GetGenericTypeDefinition();
+            
+            return genericDefinition == InvocationHandlerType
+                   || genericDefinition == StreamInvocationHandlerType
+                   || genericDefinition == MessageHandlerType
+                   ;
+        }
     }
 }

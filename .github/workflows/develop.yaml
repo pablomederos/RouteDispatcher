@@ -1,4 +1,4 @@
-name: NuGet Test
+name: Develop testing flow
 
 on:
   push:
