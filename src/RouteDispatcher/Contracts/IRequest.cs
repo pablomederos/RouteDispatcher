@@ -8,3 +8,7 @@ public interface IRequest : IRequest<Empty>
 public interface IRequest<out TResponse>
 {
 }
+
+public interface IStreamRequest<out TResponse>
+{
+}

@@ -35,7 +35,7 @@ namespace RouteDispatcher.Models
         }
 
         public Type HandlerType { get; }
-        public MethodInfo HandlerMethod { get; }
+        public MethodInfo? HandlerMethod { get; set; }
         private readonly Timer? _timeout;
         private bool _isDisposed;
 

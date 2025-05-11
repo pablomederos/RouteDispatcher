@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using RouteDispatcher.Contracts;
 using RouteDispatcher.Exceptions;
 using RouteDispatcher.Models;
@@ -10,22 +10,18 @@ namespace RouteDispatcher.ConcreteServices;
 
 public sealed partial class Dispatcher
 {
-    public Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default)
-        where TRequest : IRequest
-        => Send<Empty>(request, cancellationToken);
-
-    public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    public IAsyncEnumerable<TResponse> Stream<TResponse>(IStreamRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         Type requestType = request.GetType();
 
         if (!_configurationOptions.UseHandlersCache)
-            return GetHandler<TResponse>(requestType)
+            return GetStreamHandler<TResponse>(requestType)
                 (request, cancellationToken);
         
-        CachedHandlerItem cached = GetCachedHandler<TResponse>(requestType);
-            
+        CachedHandlerItem cached = GetCachedStreamHandler<TResponse>(requestType);
+        
         bool keepCacheForEver = _configurationOptions.KeepCacheForEver;
         TimeSpan cleanupTimeout = _configurationOptions.DiscardCachedHandlersTimeout;
 
@@ -34,13 +30,13 @@ public sealed partial class Dispatcher
 
         object handler = _serviceProvider
             .GetService(cached.HandlerType)
-            ?? throw new HandlerNotFoundException("No handler found for request type", requestType);
-        
+            ?? throw new HandlerNotFoundException("No stream handler found for request type", requestType);
+
         cached
             .HandlerMethod ??= handler.GetType()
-            .GetMethod(HandlerMethodName)!;
-
-        return (Task<TResponse>) cached
+            .GetMethod(StreamMethodName)!;
+        
+        return (IAsyncEnumerable<TResponse>) cached
             .HandlerMethod
             .Invoke(
                 handler,
@@ -50,41 +46,30 @@ public sealed partial class Dispatcher
                     cancellationToken
                 }
             )!;
-
     }
 
-    private HandlerDelegate<TResponse> GetHandler<TResponse>(Type requestType)
+    private StreamHandlerDelegate<TResponse> GetStreamHandler<TResponse>(Type requestType)
     {
-        Type handlerType = InvocationHandlerType
+        Type handlerType = StreamInvocationHandlerType
             .MakeGenericType(requestType, typeof(TResponse));
 
         object? handler = _serviceProvider
             .GetService(handlerType);
-
-        // Todo: Remove with obsolete code
-        if (handler is null)
-        {
-            Type obsoleteHandlerType = RequestHandlerType
-                .MakeGenericType(requestType, typeof(TResponse));
-
-            handler = _serviceProvider
-                .GetService(obsoleteHandlerType);
-        }
         
         if (handler is null)
-            throw new HandlerNotFoundException("No handler found for request type", requestType);
+            throw new HandlerNotFoundException("No stream handler found for request type", requestType);
 
         MethodInfo methodInfo = handlerType
             .GetMethod(
-                HandlerMethodName
+                StreamMethodName
             )!;
  
         return (
             request,
             cancellationToken
-        ) => (Task<TResponse>) methodInfo
+        ) => (IAsyncEnumerable<TResponse>) methodInfo
             .Invoke(
-                handler!,
+                handler,
                 new object[]
                 {
                     request, 
@@ -93,7 +78,7 @@ public sealed partial class Dispatcher
             )!;
     }
     
-    private CachedHandlerItem GetCachedHandler<TResponse>(Type requestType)
+    private CachedHandlerItem GetCachedStreamHandler<TResponse>(Type requestType)
     {   
         bool keepCacheForEver = _configurationOptions.KeepCacheForEver;
         TimeSpan cleanupTimeout = _configurationOptions.DiscardCachedHandlersTimeout;
@@ -101,11 +86,11 @@ public sealed partial class Dispatcher
         return _handlerCache
             .GetOrAdd(requestType, requestTypeKey =>
             {
-                Type handlerType = InvocationHandlerType
+                Type handlerType = StreamInvocationHandlerType
                     .MakeGenericType(requestTypeKey, typeof(TResponse));
 
                 MethodInfo handlerMethod = handlerType
-                    .GetMethod(HandlerMethodName)!;
+                    .GetMethod(StreamMethodName)!;
                 
                 return new CachedHandlerItem(
                     _handlerCache,
