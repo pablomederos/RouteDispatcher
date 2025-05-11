@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RouteDispatcher.Exceptions
 {
+    [ExcludeFromCodeCoverage]
     public sealed class HandlerNotFoundException : Exception
     {
         public HandlerNotFoundException(string message) : base(message)
