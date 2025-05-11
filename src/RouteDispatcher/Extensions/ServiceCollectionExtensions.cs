@@ -143,14 +143,5 @@ namespace RouteDispatcher.Extensions
                    || genericDefinition == MessageHandlerType
                    ;
         }
-
-        private static MethodInfo HandlerMethod(this Type type)
-            => type.GetGenericTypeDefinition() switch
-            {
-                { } t when t == InvocationHandlerType => t.GetMethod(HandlerMethodName),
-                { } t when t == StreamInvocationHandlerType => t.GetMethod(StreamMethodName),
-                { } t when t == MessageHandlerType => t.GetMethod(MessageMethodName),
-                _ => throw new InvalidOperationException($"Handler type [{type.Name}] is not supported.")
-            } ?? throw new InvalidOperationException($"Handler Method not found.");
     }
 }
